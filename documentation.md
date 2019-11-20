@@ -1,25 +1,68 @@
-*pipeline\_methods.py*
+﻿# Pipeline documentation
 
-**retrieve\_orthologs.py **
+## Introduction
 
-Output: orthologs.json (script only runs when this file is absent)
+The protein repeat evolution (PRE/PhyRepD) pipeline quantifies repeat evolution using comparative (phylo)genomics of orthologous groups (OGs). 
 
-Query for orthologous relationships of human protein coding genes with
-selected species.
+The pipeline consists of ~~three~~ four components: 
 
-as defined in ensembl\_stable\_id\_species.json For each species, it’s
-orthologs with human are retrieved and put into a dictionary with
-human\_gene\_id as key.
+ 1. **Repeat detection:** Detection of a broad spectrum of protein repeats consisting of either structural domains or short linear motif sequences.
+ 2. **Repeat optimization:** Improving the sensitivity and precision of detection by making OG-specific repeat models.
+ 3. **Tree reconciliation:** Inferring evolutionary events in the repeat region through phylogenetic comparison of repeat trees to gene trees.
+ 4. **Post-processing / duplication analysis:** Finally, to quantify repeat evolution and compare protein families, a duplication score was derived from the post-ancestral duplications and the number of proteins in the OG.
 
-Namely: human-mouse, opossum-tasmanian devil, duck-chicken,
-stickleback-takifugu,
+## Overview of the workflow
 
-spotted gar, zebrafish, xenopus, platypus, anole lizard, turtle (14
-species)
+The workflow for components 1-3 is defined in two Snakemake files which link together Python and Bash scripts. Post-processing and analysis of the inferred repeat duplications, as well as comparisons with other datasets are done with various Python and R scripts. 
 
-How to check whether is completed: Not.
+ - Data collection (Snakemake)
+ - Snakemake: repeat detection
+ - Scripts collection: repeat duplication analysis 
 
-TODO: retry sparql
+
+## Prerequisites
+
+### Python
+Version 2.7 with pip (9.0.1)
+ *pipeline\_methods.py*
+contains configuration like paths and environmental variables, as well as methods used by other Python scripts
+
+**Data retrieval and processing**
+SPARQLWrapper (1.8.1)
+requests (2.18.4)
+pandas (0.23.1)
+numpy (1.13.1)
+
+**Tree reconciliation** 
+anaconda-client (1.2.2)
+conda (4.3.27)
+treefix (1.1.10)
+ete3 (3.0.0b36)
+
+**Analysis:**
+matplotlib (2.2.2)
+matplotlib-venn (0.11.5)
+seaborn (0.9.0)
+scipy (1.1.0)
+scikit-learn (0.19.1)
+goatools (0.8.4)
+
+### Software
+HMMer
+TreeFix
+
+
+##   Data collection (Snakefile)
+
+### Retrieve orthologs
+Retrieve orthologs of human protein coding genes from selected species using a SPARQL query on the ENSEMBL endpont. 
+
+Script: retrieve\_orthologs.py
+
+Input: ensembl\_stable\_id\_species.json with list of selected species. Default 14 species if possible in pairs of closely related species: human-mouse, opossum-tasmanian devil, duck-chicken, stickleback-takifugu, spotted gar, zebrafish, xenopus, platypus, anole lizard, turtle (14 species)
+
+Output: orthologs.json  dictionary with human\_gene\_id as key and orthologs gene ids as values
+
 
 **filter\_orthologs.py**
 
@@ -47,9 +90,6 @@ Output:
 
 How to check whether is completed: Not. Filtered set &lt; full set
 
-**DEP parse\_orthologs2.py**
-
-Split in retrieve\_genetrees and parse\_genetree
 
 **retrieve\_genetrees.py**
 
@@ -74,6 +114,8 @@ Downloading and saving all raw data is necessary for reproducibility
 
 --- Snakefile 1 ended, all files necessary to check if next steps are
 done for all proteins.
+
+## Repeat detection (Snakefile)
 
 **parse\_genetree.py** *\$1: ensembl\_api/{gene\_id}.json*
 

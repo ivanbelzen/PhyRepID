@@ -1,0 +1,40 @@
+'''
+Protein Repeat Evolution pipeline
+April 2018 
+Species defined in ensembl_stable_id_species.json
+'''
+import pipeline_methods as pre
+
+#Paths to folders defined in pre
+
+rule all:
+	input: 
+		pre.ogs_file,
+		pre.genes_to_genetrees_file
+
+#Query orthologs of human protein coding genes from EBI Sparql endpoint
+rule retrieve_orthologs:
+	output:
+		pre.orthologs_file
+	shell: 
+		'python retrieve_orthologs.py'
+
+rule filter_orthologs:
+	input:
+		pre.orthologs_file
+	output:
+		pre.ogs_file,
+		'excluded_orth_rel.json',
+		'excluded_pairs.json'
+	shell:
+		'python filter_orthologs.py'
+
+rule retrieve_genetrees:
+	input:
+		pre.ogs_file
+	output:
+		pre.genes_to_genetrees_file
+	run:
+		shell('>log_retrieve_genetrees.txt'),
+		shell('>log_parse_genetrees.txt'),
+		shell('python retrieve_genetrees.py')
