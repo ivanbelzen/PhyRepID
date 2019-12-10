@@ -20,6 +20,8 @@ The workflow for components 1-3 is defined in two Snakemake files which link tog
  - Snakemake: repeat detection
  - Scripts collection: repeat duplication analysis 
 
+Detailed documentation can be found here
+[https://github.com/ivanbelzen/protein-repeat-evolution/blob/master/documentation.md](https://github.com/ivanbelzen/protein-repeat-evolution/blob/master/documentation.md)
 
 ## Prerequisites
 

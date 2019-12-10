@@ -1,17 +1,22 @@
-﻿# Pipeline documentation
+﻿# PhyRepID pipeline documentation
 
-Detailed documentation 
+[https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#](https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#)
+[https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#](https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#)[https://docs.google.com/document/d/1Xb4_q63-Bv0wRZdNtnTzZ5EoSa5FOlN59xBSPxwYYQc/edit#heading=h.p42al2a85x8g](https://docs.google.com/document/d/1Xb4_q63-Bv0wRZdNtnTzZ5EoSa5FOlN59xBSPxwYYQc/edit#heading=h.p42al2a85x8g)
+[https://drive.google.com/drive/u/1/folders/1LvksU1g1KkZSp9rywROY5wYTi696LaR1](https://drive.google.com/drive/u/1/folders/1LvksU1g1KkZSp9rywROY5wYTi696LaR1)
+
 
 ##   Data collection (Snakefile)
 
 ### Retrieve orthologs
 Retrieve orthologs of human protein coding genes from selected species using a SPARQL query on the ENSEMBL endpont. 
 
-Script: retrieve\_orthologs.py
+**retrieve\_orthologs.py**
 
-Input: ensembl\_stable\_id\_species.json with list of selected species. Default 14 species if possible in pairs of closely related species: human-mouse, opossum-tasmanian devil, duck-chicken, stickleback-takifugu, spotted gar, zebrafish, xenopus, platypus, anole lizard, turtle (14 species)
+Input: ensembl\_stable\_id\_species.json
+Json dictionary with list of selected species. Default 14 species if possible in pairs of closely related species: human-mouse, opossum-tasmanian devil, duck-chicken, stickleback-takifugu, spotted gar, zebrafish, xenopus, platypus, anole lizard, turtle (14 species)
 
-Output: orthologs.json  dictionary with human\_gene\_id as key and orthologs gene ids as values
+Output: orthologs.json  
+Json dictionary with human\_gene\_id as key and orthologs gene ids as values
 
 
 **filter\_orthologs.py**
@@ -22,13 +27,11 @@ Filter criteria for human protein coding gene:
 
 -   should have an ortholog in mouse
 
--   should have orthologs for all species in group or none (pairs
-    > defined in ensembl\_stable\_id\_species.json) “excluded pairs”
+-   should have orthologs for all species in group or none (pairs defined in ensembl\_stable\_id\_species.json) “excluded pairs”
 
 -   minimum of 10 orthologs (removed if &lt;10)
 
--   maximum of 3 orthologs in a species (removed if &gt;3 “excluded orth
-    > rel”
+-   maximum of 3 orthologs in a species (removed if &gt;3 “excluded orth rel”)
 
 Output:
 
@@ -62,7 +65,7 @@ gene\_ids in orthologs\_filtered.json
 
 Downloading and saving all raw data is necessary for reproducibility
 
---- Snakefile 1 ended, all files necessary to check if next steps are
+--- Datacollection finished, all files necessary to check if next steps are
 done for all proteins.
 
 ## Repeat detection (Snakefile)
