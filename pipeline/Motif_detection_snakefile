@@ -1,0 +1,173 @@
+'''
+Protein Repeat Evolution pipeline
+May 2018 
+
+Species defined in ensembl_stable_id_species.json
+Strings defined in pipeline methods
+
+Fork of normal Snakefile
+Denovo repeat detection instead of pfam domain detection.
+
+Run MEME on disjunct set of hmm results and hmm final results (raw pfam data vs after iteration  and filtering for repeats)
+'''
+import pipeline_methods as pre
+import glob
+
+#Paths to folders defined in pre
+
+'''
+#Determine output file list
+og_id_list = [] #genetree_gene
+meme_temp_og_id_list = [] #first filtering
+meme_og_id_list = [] #second filtering
+
+#og ids to fork pipeline
+with open(pre.root+'run_meme2.json','r') as og_ids:
+	og_id_list = json.load(og_ids)
+
+#meme which passed first filtering n_sites >= 10 & max 10 percent Xes
+with open(pre.root+'meme_log_nox.json','r') as meme_og_ids:
+	meme_og_id_dict = json.load(meme_og_ids)
+
+for og,vals in meme_og_id_dict.items():
+	if vals['nsites'] >= 10 and vals['consensus'].count('X') < 1 and vals['consensus'].count('Y') < (0.3*len(vals['consensus'])):
+		if 'ENSGT00670000097656_ENSG00000134970' in og: continue
+		meme_temp_og_id_list.append(og)
+
+final_meme_temp_og_id_list = []
+for file in glob.glob(pre.denovo_repeats_path + '*.fa' ):
+	og = file[len(pre.denovo_repeats_path):-3]
+	print(og)
+	final_meme_temp_og_id_list.append(og)
+	
+#meme_temp_og_id_list = ['ENSGT00410000025918_ENSG00000137812']
+
+#meme which passed filtering >= 3 repeats in human and >=1 in mouse
+with open(pre.root+'meme_included_ogs.json','r') as meme_og_ids:
+	meme_og_id_dict = json.load(meme_og_ids)
+	meme_og_id_list = meme_og_id_dict['og_id']
+		
+
+'''
+
+meme_file_list = glob.glob(pre.denovo_repeats_path + '*.fa' ) 
+meme_og_list = [x[len(pre.denovo_repeats_path):-len('.fa')] for x in meme_file_list]
+print(len(meme_og_list))
+
+rule all:
+	input: 
+		#expand(pre.fasta_masked_path+"{og_id}.fa", og_id=og_id_list),
+		#expand(pre.meme_output_path+"{og_id}/meme.html", og_id=og_id_list),
+		#expand(pre.progress_path+"{og_id}.meme_nox.done", og_id=og_id_list),
+		#expand(pre.progress_path+"{og_id}.meme.done", og_id=og_id_list),
+		#expand(pre.progress_path+"{og_id}.memefilter.done", og_id=meme_temp_og_id_list),
+		#expand(pre.progress_path+"{og_id}.memehmm.done", og_id=final_meme_temp_og_id_list)
+		expand(pre.genetree_path+"{og_id}.nhx", og_id=meme_og_list),
+		expand(pre.denovo_trees_path+"{og_id}.treefile", og_id=meme_og_list),
+		expand(pre.denovo_treefix_path+"{og_id}.treefix.mpr.recon", og_id=meme_og_list)
+		
+rule mask_sequences:
+	input:
+		hmm = pre.pfam_hmm_path+"{og_id}.tblout", fasta = pre.fasta_path+"{og_id}.fa"
+	output:
+		pre.fasta_masked_path+"{og_id}.fa"
+	shell:
+		'python parse_tblout_mask.py {input.hmm} {input.fasta}' 
+
+rule run_meme:
+	input:
+		pre.fasta_masked_path+"{og_id}.fa"
+	output:
+		pre.meme_output_path+"{og_id}/meme.html"
+	shell:
+		'meme {input} -oc '+pre.meme_output_path+'{wildcards.og_id} -protein -mod anr -minsites 10 -minw 12 -maxw 30 -time 300 -maxiter 10 -nostatus -maxsize 10000000'
+
+rule parse_meme:
+	input:
+		pre.meme_output_path+"{og_id}/meme.html"
+	output:
+		pre.progress_path+"{og_id}.meme_nox.done"
+	shell:
+		'python parse_meme_output.py {input}; touch {output}'
+
+rule select_repeats:
+	input: 
+		pre.denovo_meme_repeats_path+"{og_id}.fa"
+	output:
+		pre.progress_path+"{og_id}.memefilter.done"
+	shell:
+		'mafft --quiet --localpair --maxiterate 1000 {input} > '+pre.denovo_aligned_path+'{wildcards.og_id}.linsi.fa; \
+		hmmbuild --fast --symfrac 0.6 -n \'motif\' '+pre.denovo_hmm_path+'{wildcards.og_id}.hmm '+pre.denovo_aligned_path+'{wildcards.og_id}.linsi.fa; \
+		hmmpress -f '+pre.denovo_hmm_path+'{wildcards.og_id}.hmm; \
+		hmmscan --domT 0 --domtblout '+pre.denovo_tblout_path+'{wildcards.og_id}.tblout '+pre.denovo_hmm_path+'{wildcards.og_id}.hmm '+pre.fasta_path+'{wildcards.og_id}.fa &>/dev/null; \
+		python parse_denovo_tblout_init.py '+pre.denovo_tblout_path+'{wildcards.og_id}.tblout '+pre.fasta_path+'{wildcards.og_id}.fa; \
+		touch {output}'  
+
+rule repeat_detection_iteration:
+	input:
+		pre.denovo_repeats_path+"{og_id}.fa"
+	output: 
+		pre.progress_path+"{og_id}.memehmm.done"
+	shell: 
+		'bash run_meme_iteration.bash {input}' 	
+
+
+rule run_iqtree:
+	input: 
+		pre.denovo_aligned_path+"{og_id}.linsi.fa"
+	output:
+		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", pre.denovo_aligned_path+"{og_id}.linsi.fa.iqtree"
+	shell:
+		'iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT -redo'
+		
+rule mv_iqtree:
+	input: 
+		pre.denovo_aligned_path+"{og_hit}.linsi.fa.treefile"
+	output:
+		pre.denovo_trees_path+"{og_hit}.treefile"
+	shell:
+		'cp {input} {output}'
+
+
+rule reparse_genetrees:
+    input:
+        pre.ensembl_path+"{gene_id}.json"
+    output:
+        pre.fasta_path+"{genetree}_{gene_id}.fa",
+        pre.genetree_path+"{genetree}_{gene_id}.nhx"
+    shell:
+        'python parse_genetree.py {input}'		
+				
+rule prepare_treefix:
+	input:
+		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", genetree = pre.genetree_path+"{og_id}.nhx"
+	output:
+		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", 
+		pre.denovo_treefix_path+"{og_id}.stree", pre.denovo_treefix_path+"{og_id}.smap"
+	shell:
+		'python generate_treefix_input.py {input.treefile} {input.genetree}'
+
+rule run_treefix:
+	input: 
+		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", iqtree = pre.denovo_aligned_path+"{og_id}.linsi.fa.iqtree",  smap = pre.denovo_treefix_path+"{og_id}.smap", stree = pre.denovo_treefix_path+"{og_id}.stree"
+	output:
+		pre.denovo_aligned_path+"{og_id}.treefix.tree"
+	shell:
+		#| grep -oP "Best-fit model according to BIC: \K.*"
+		'model=`cat {input.iqtree} | grep -oP "Best-fit model according to BIC: \K.*"`; treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o .linsi.fa.treefile.rooted -n .treefix.tree -V 0 -m treefix.models.iqtreemodel.CoarseModel -e \'-t AA -m  \'$model\'\' {input.treefile}'
+
+rule mv_treefix:
+	input: 
+		pre.denovo_aligned_path+"{og_id}.treefix.tree"
+	output:
+		pre.denovo_treefix_path+"{og_id}.treefix.tree"
+	shell:
+		'mv {input} {output}'
+			
+rule run_treefix_annotate:
+	input: 
+		tree = pre.denovo_treefix_path+"{og_id}.treefix.tree", smap = pre.denovo_treefix_path+"{og_id}.smap", stree = pre.denovo_treefix_path+"{og_id}.stree"
+	output:
+		pre.denovo_treefix_path+"{og_id}.treefix.mpr.recon"
+	shell:
+		'tree-annotate -s {input.stree} -S {input.smap} {input.tree}'
