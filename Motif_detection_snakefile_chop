@@ -1,0 +1,38 @@
+'''
+Protein Repeat Evolution pipeline
+August 2018 
+
+Species defined in ensembl_stable_id_species.json
+Strings defined in pipeline methods
+
+Fork of normal Snakefile
+Denovo repeat detection instead of pfam domain detection.
+Run MEME on disjunct set of fasta_ogs/hmm results and OGs  that have pfam repeat trees
+
+subworkflow to chop fasta sequences
+'''
+import pipeline_methods as pre
+import glob
+
+#meme_dataset_file = pre.root+'meme_dataset.json'
+meme_dataset_file = pre.root+'meme_todo.json'
+
+#Determine output file list
+input_ogs = []
+
+with open(meme_dataset_file,'r') as og_ids:
+	input_ogs = json.load(og_ids)
+
+#input_ogs = ['ENSGT00830000128299_ENSG00000162692']
+
+rule all:
+	input:
+		expand(pre.progress_path+"{og_id}.chopped_fasta.done", og_id=input_ogs)
+			
+rule mask_sequences:
+	input:
+		hmm = pre.pfam_hmm_path+"{og_id}.tblout", fasta = pre.fasta_path+"{og_id}.fa"
+	output:
+		pre.progress_path+"{og_id}.chopped_fasta.done"
+	shell:
+		'python parse_tblout_denovo_chop.py {input.hmm} {input.fasta}; touch {output}' 
