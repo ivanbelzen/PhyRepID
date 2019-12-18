@@ -1,208 +1,134 @@
 ﻿# PhyRepID pipeline documentation
-
-[https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#](https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#)
-[https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#](https://docs.google.com/document/d/1krZxPs3YlKCdZ8C-l5VfyWIYeaOPVlWXDX3Rv58jDyc/edit#)[https://docs.google.com/document/d/1Xb4_q63-Bv0wRZdNtnTzZ5EoSa5FOlN59xBSPxwYYQc/edit#heading=h.p42al2a85x8g](https://docs.google.com/document/d/1Xb4_q63-Bv0wRZdNtnTzZ5EoSa5FOlN59xBSPxwYYQc/edit#heading=h.p42al2a85x8g)
-[https://drive.google.com/drive/u/1/folders/1LvksU1g1KkZSp9rywROY5wYTi696LaR1](https://drive.google.com/drive/u/1/folders/1LvksU1g1KkZSp9rywROY5wYTi696LaR1)
-
+[https://docs.google.com/document/d/1SfTu8sbzZAmX9UJLnoqzd-pvcVvzN4v4PypTHRK2vnY/edit#](https://docs.google.com/document/d/1SfTu8sbzZAmX9UJLnoqzd-pvcVvzN4v4PypTHRK2vnY/edit#)
 
 ##   Data collection (Snakefile)
 
-### Retrieve orthologs
+**retrieve\_orthologs(.py)**
+
 Retrieve orthologs of human protein coding genes from selected species using a SPARQL query on the ENSEMBL endpont. 
 
-**retrieve\_orthologs.py**
+Input: 
 
-Input: ensembl\_stable\_id\_species.json
-Json dictionary with list of selected species. Default 14 species if possible in pairs of closely related species: human-mouse, opossum-tasmanian devil, duck-chicken, stickleback-takifugu, spotted gar, zebrafish, xenopus, platypus, anole lizard, turtle (14 species)
+ - ensembl\_stable\_id\_species.json
 
-Output: orthologs.json  
+Json dictionary with list of selected species. Default 14 species if possible in pairs of closely related species: human-mouse, opossum-tasmanian devil, duck-chicken, stickleback-takifugu, spotted gar, zebrafish, xenopus, platypus, anole lizard, turtle.
+
+Output: 
+
+ - orthologs.json  
+
 Json dictionary with human\_gene\_id as key and orthologs gene ids as values
 
 
-**filter\_orthologs.py**
+**filter\_orthologs(.py)**
 
-Input: orthologs.json
-
-Filter criteria for human protein coding gene:
-
--   should have an ortholog in mouse
-
+Filter criteria for the OG which is formed by a human protein coding gene that:
+- should have an ortholog in mouse
 -   should have orthologs for all species in group or none (pairs defined in ensembl\_stable\_id\_species.json) “excluded pairs”
-
 -   minimum of 10 orthologs (removed if &lt;10)
-
 -   maximum of 3 orthologs in a species (removed if &gt;3 “excluded orth rel”)
+Input: 
+ - orthologs.json
 
 Output:
-
 -   orthologs\_filtered.json
-
 -   excluded\_pairs.json
-
 -   excluded\_orth\_rel.json
 
-How to check whether is completed: Not. Filtered set &lt; full set
+**retrieve\_genetrees(.py)**
 
+Queries ensembl API for genetrees of the filtered orthologs. Downloading and saving all raw data for reproducibility.
 
-**retrieve\_genetrees.py**
-
-Queries ensembl API for genetrees of the filtered orthologs.
-
-Input: orthologs\_filtered.json
+Input: 
+- orthologs\_filtered.json
 
 Output:
-
--   ensembl\_api/{gene\_id}.json
-
--   genes\_to\_genetrees.json (mapping)
-
--   genetrees\_ogs.json (mapping)
-
+-  ensembl\_api/{gene\_id}.json
+-   genes\_to\_genetrees.json *(mapping)*
+-   genetrees\_ogs.json *(mapping)*
 -   redo\_orth\_parse.json
 
-Completed if: ensembl\_api/{gene\_id}.json file is created for all
-gene\_ids in orthologs\_filtered.json
-
-Downloading and saving all raw data is necessary for reproducibility
-
---- Datacollection finished, all files necessary to check if next steps are
-done for all proteins.
+Completed if: ensembl\_api/{gene\_id}.json file is created for all gene\_ids in orthologs\_filtered.json
 
 ## Repeat detection (Snakefile)
+Files  to check if next steps are done for all proteins are generated during data collection.
+** ** 
 
-**parse\_genetree.py** *\$1: ensembl\_api/{gene\_id}.json*
+**parse\_genetree(.py)** 
 
-Subtract smallest gene tree still containing all orthologs. Acquire
-fasta sequences for proteins in gene tree.
-
-Advantage: can be called for a single gene tree.
-
-Disadvantage: need to load mapping each time.
+Subtract smallest gene tree  containing all orthologs; and acquire fasta sequences for proteins in gene tree. 
+For each *og\_id* in genes\_to\_genetrees.json where *{og\_id} = {genetree\_id}\_{gene\_id}*.
 
 Input:
-
--   orthologs\_filtered.json
-
--   ensembl\_api/{gene\_id}.json
+-    ensembl\_api/{gene\_id}.json
+-  orthologs\_filtered.json
 
 Output:
-
 -   genetrees\_nhx/{genetree\_id}\_{gene\_id}.nhx
+-    fasta\_ogs/{genetree\_id}\_{gene\_id}.fa
 
--   fasta\_ogs/{genetree\_id}\_{gene\_id}.fa
-
-Completed if: genetrees\_nhx/{og\_id}.nhx and fasta\_ogs/{og\_id}.fa for
-every og\_id in
-
-genes\_to\_genetrees.json where {og\_id} = {genetree\_id}\_{gene\_id}
-
-**(DEP) hmmscan\_pfam.bash **
-
-fully replaced by snakemake rule:
+**hmmpress, hmmscan**
+Detect Pfam domains using HMMER3 using liberal thresholds: sequence bit score of 12.5 and domain score 0. 
+For each *og\_id* in genes\_to\_genetrees.json
 
 Input:
-
--   Pfam-A.hmm (+ pressed files)
-
--   fasta\_ogs/{og\_id}.fa
+-  fasta\_ogs/{og\_id}.fa
+-  Pfam-A.hmm, Pfam-A.hmm.h3i 
 
 Output:
-
 -   pfam/hmm/{og\_id}.tblout
 
-'hmmscan -T 12.5 --domT 0 --domtblout {output} '+pfam\_file+' {input}
-&&gt;/dev/null'
+**repeat_detection_iteration**
+Iterative pfam domain annotation. Improvement on regular hmmscan for more accurate repeat detection.
 
-Completed if: pfam/hmm/{og\_id}.tblout for og\_id in
-genes\_to\_genetrees.json
-
-**run\_pfam\_iteration\_single.bash** *\$1: pfam/hmm/{og\_id}.tblout*
-
-Iterative pfam domain annotation. Improvement on regular hmmscan for
-more accurate repeat detection.
-
-Scripts:
-
--   parse\_tblout\_init.py *\$1: pfam/hmm/{og\_id}.tblout \$2:
-    > fasta\_ogs/{og\_id}.fa*
-
-    -   Use sequences gathering cutoff, select best Pfam model for each
-        > clan based on sequence bitscore maximalisation (over-all).
-
-    -   Filter Pfam hits based on minimum \#repeats (&gt;=3) in human,
-        > presence in mouse and general filtering rule: &gt;\# repeats
-        > in &gt; \#species (3 and 1, respectively so not currently
-        > used.
-
-    -   Writes a fasta file for each best hit of clan with all of the
-        > repeats
-
-    -   hmm\_results.json before any filtering
-
-<!-- -->
-
--   parse\_tblout\_iterate.py *\$1: pfam/tblout{og\_hit\_id}.tblout \$2:
-    > fasta\_ogs/{og\_id}.fa*
-
-    -   extract repeats from tblout, same as happens in
-        > parse\_tblout\_init
-
--   parse\_tblout\_final.py *\$1: pfam/tblout{og\_hit\_id}.tblout \$2:
-    > fasta\_ogs/{og\_id}.fa*
-
-    -   Use more liberal slicing for making tree, envelope spacing and
-        > padding 5
-
-    -   hmm\_results\_final.json
-
-Input:
-
--   pfam/hmm/{og\_id}.tblout
-
--   fasta\_ogs/{og\_id}.fa
-
--   Pfam gathering cutoff: ga\_cutoff.tsv
-
--   Pfam clans: Pfam-A.clans.tsv
-
-Output:
-
--   progress\_files/{og\_id}.pfamhmm.done
-
--   pfam/repeats/{og\_id\_hit}.fa parse\_tblout\_init.py
-
-    -   serves as input for iteration
-
--   pfam/aligned/{og\_id\_hit}.linsi.fa
-
--   pfam/alignments/{og\_id\_hit}.linsi.fa last copy of pfam/aligned
-
--   pfam/tblout/{og\_id\_hit}.tblout
-
--   hmm\_results.json parse\_tblout\_init.py
-
--   excluded\_repeats.json parse\_tblout\_init.py
-
--   hmm\_results\_final.json parse\_tblout\_final.py
-
-Alignment with mafft linsi: mafft --quiet --localpair --maxiterate 1000
-
-.fa.old as temporary file in /pfam/repeats/
-
-Iterates max 20 times or until convergence (identical output file as
-.fa.old)
-
-Build profile HMMs based on alignment hmmbuild --fast --symfrac 0.6 -n
-
-Check for length of profile, prevent profile drift: enforce minimum
-length of 20
+run\_pfam\_iteration\_single.bash *\$1: pfam/hmm/{og\_id}.tblout*
 
 Completed if: dummy file is made for all {og\_id} from
 genes\_to\_genetrees.json
 
-**run\_iqtree.bash**
 
-Can be replaced by snakemake rule
+Scripts:
+-   parse\_tblout\_init.py *\$1: pfam/hmm/{og\_id}.tblout \$2: fasta\_ogs/{og\_id}.fa*
+
+    -   Use sequences gathering cutoff, select best Pfam model for each clan based on sequence bitscore maximalisation (over-all).
+
+    -   Filter Pfam hits based on minimum \#repeats (&gt;=3) in human, presence in mouse.
+    -   Writes a fasta file for each best hit of clan with all of the  repeats
+    -   hmm\_results.json before any filtering
+-   parse\_tblout\_iterate.py *\$1: pfam/tblout{og\_hit\_id}.tblout \$2: fasta\_ogs/{og\_id}.fa*
+    -   extract repeats from tblout, same as happens in parse\_tblout\_init
+-   parse\_tblout\_final.py *\$1: pfam/tblout{og\_hit\_id}.tblout \$2: fasta\_ogs/{og\_id}.fa*
+    -   Use more liberal slicing for making tree, envelope spacing and padding >5
+    -   hmm\_results\_final.json
+
+Input:
+-   pfam/hmm/{og\_id}.tblout
+-   fasta\_ogs/{og\_id}.fa
+-   Pfam clans and gathering cutoff:  Pfam-A.clans.tsv ga\_cutoff.tsv
+
+Output:
+-   parse\_tblout\_init.py:
+    -   pfam/repeats/{og\_id\_hit}.fa *(serves as input for iteration)*
+    -  hmm\_results.json
+    -  excluded\_repeats.json
+-   pfam/aligned/{og\_id\_hit}.linsi.fa *(with last iteration a copy to pfam/alignments/{og\_id\_hit}.linsi.fa)*
+-   pfam/tblout/{og\_id\_hit}.tblout
+-   parse\_tblout\_final.py
+    - hmm\_results\_final.json 
+    - progress\_files/{og\_id}.pfamhmm.done
+
+
+Alignment with mafft linsi: *mafft --quiet --localpair --maxiterate 1000*
+
+Build profile HMMs based on alignment: *hmmbuild --fast --symfrac 0.6 -n*
+
+Check for length of profile, prevent profile drift: enforce minimum length of 20
+
+Iterates max 20 times or until convergence 
+.fa.old as temporary file in /pfam/repeats/
+
+
+**run_iqtree** and **mv_iqtree**
 
 Input:
 
@@ -210,88 +136,76 @@ Input:
 
 Output:
 
--   pfam/aligned/{og\_id\_hit}.linsi.fa.treefile and .iqtree and lots of
-    > others
-
+- pfam/aligned/{og\_id\_hit}.linsi.fa.treefile 
+- pfam/aligned/{og\_id\_hit}.iqtree 
+- ....
 -   pfam/trees/{og\_id\_hit}.treefile
 
-iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT
--redo
-
-copy to pfam/trees is separate rule
+*iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT
+-redo*
 
 Completed if: .treefile is made for all {og\_id\_hit} from
 hmm\_results\_final.json
 
-**run\_treefix.bash**
+(copy to pfam/trees is separate rule)
 
-split into three snakemake rules:
+**reparse_genetrees**
+parse_genetree.py
 
--   prepare\_treefix:
+Input:
+-    ensembl\_api/{gene\_id}.json
 
-    -   input:
+Output:
+-   genetrees\_nhx/{genetree\_id}\_{gene\_id}.nhx
+-    fasta\_ogs/{genetree\_id}\_{gene\_id}.fa
 
-        -   pfam/aligned/{og\_hit}.linsi.fa.treefile
 
-        -   genetrees\_nhx/{og}.nhx
+**prepare_treefix**
+Script: generate_treefix_input.py {input.treefile} {input.genetree}'
 
-    -   output:
+Input:
+- pfam/aligned/{og}\_{hit}.linsi.fa.treefile
+- genetrees\_nhx/{og\_id}.nhx
 
-        -   pfam/aligned/{og}\_{hit}.linsi.fa.treefile.rooted
+Output:
+- pfam/aligned/{og}\_{hit}.linsi.fa.treefile.rooted
+- pfam/treefix/{og}.stree 
+- pfam/treefi/{og}.smap
+ 
+**run_treefix** and **mv_treefix**
+Input:
+- pfam/aligned/{og}\_{hit}.linsi.fa.treefile.rooted
+- pfam/treefix/{og}.stree 
+-  pfam/treefi/{og}.smap
+   - pfam/aligned/{og}\_{hit}.linsi.fa.iqtree
+  - model, extract best-fit model according to BIC
+  - *(also uses alignment but not specified as input)*
 
-        -   pfam/treefix/{og}.stree pfam/treefi/{og}.smap (*not in
-            > snakemake)*
+Output:
+- pfam/treefix/{og}\_{hit}.treefix.tree
+  - copied from pfam/aligned/{og}\_{hit}.treefix.tree
+- ..
+   
 
-    -   script: python generate\_treefix\_input.py {input.treefile}
-        > {input.genetree}
-
-<!-- -->
-
--   run\_treefix:
-
-    -   input:
-
-        -   pfam/aligned/{og}\_{hit}.linsi.fa.treefile.rooted
-
-        -   pfam/treefix/{og}.stree pfam/treefi/{og}.smap
-
-        -   pfam/aligned/{og}\_{hit}.linsi.fa.iqtree
-
-        -   *(also uses alignment but not specified as input)*
-
-    -   output:
-
-        -   pfam/treefix/{og}\_{hit}.treefix.tree
-
-        -   *+ other files?*
-
-    -   shell:
-
-model=\`cat {input.iqtree} | grep -oP "Best-fit model according to BIC:
-\\K.\*"\`; treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o
+*treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o
 .linsi.fa.treefile.rooted -n .treefix.tree -V 0 -m
 treefix.models.iqtreemodel.CoarseModel -e \\'-t AA -m \\'\$model\\'\\'
-{input.treefile}
+{input.treefile}*
 
-move with seperate rule
+**run\_treefix\_annotate**
+- input:
+    -  pfam/treefix/{og}\_{hit}.treefix.tree
+    -  pfam/treefix/{og}.stree pfam/treefi/{og}.smap
+- output
+    -  pfam/treefix/{og}\_{hit}.treefix.mpr.recon
+    -  ...
+    
+*tree-annotate -s {input.stree} -S {input.smap} {input.tree}*
 
--   run\_treefix\_annotate:
 
-    -   input:
 
-        -   pfam/treefix/{og}\_{hit}.treefix.tree
+****
 
-        -   pfam/treefix/{og}.stree pfam/treefi/{og}.smap
-
-    -   output
-
-        -   pfam/treefix/{og}\_{hit}.treefix.mpr.recon
-
-        -   *+ others*
-
-    -   shell:
-
-tree-annotate -s {input.stree} -S {input.smap} {input.tree}
 
 **parse\_treefix.bash**
 
@@ -354,7 +268,9 @@ This repeats dict contains:
 
 analyse sequence coverage .py
 
-**Meme dataset construction:**
+
+
+## Meme dataset construction:
 
 Snakefork\_chop
 
