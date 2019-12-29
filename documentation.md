@@ -1,5 +1,5 @@
 ﻿# PhyRepID pipeline documentation
-[https://docs.google.com/document/d/1SfTu8sbzZAmX9UJLnoqzd-pvcVvzN4v4PypTHRK2vnY/edit#](https://docs.google.com/document/d/1SfTu8sbzZAmX9UJLnoqzd-pvcVvzN4v4PypTHRK2vnY/edit#)
+
 
 ##   Data collection (Snakefile)
 
@@ -52,7 +52,6 @@ Completed if: ensembl\_api/{gene\_id}.json file is created for all gene\_ids in 
 
 ## Repeat detection (Snakefile)
 Files  to check if next steps are done for all proteins are generated during data collection.
-** ** 
 
 **parse\_genetree(.py)** 
 
@@ -164,26 +163,26 @@ Output:
 Script: generate_treefix_input.py {input.treefile} {input.genetree}'
 
 Input:
-- pfam/aligned/{og}\_{hit}.linsi.fa.treefile
+- pfam/aligned/{og\_id\_hit}.linsi.fa.treefile
 - genetrees\_nhx/{og\_id}.nhx
 
 Output:
-- pfam/aligned/{og}\_{hit}.linsi.fa.treefile.rooted
-- pfam/treefix/{og}.stree 
-- pfam/treefi/{og}.smap
+- pfam/aligned/{og\_id\_hit}.linsi.fa.treefile.rooted
+- pfam/treefix/{og\_id}.stree 
+- pfam/treefi/{og\_id}.smap
  
 **run_treefix** and **mv_treefix**
 Input:
-- pfam/aligned/{og}\_{hit}.linsi.fa.treefile.rooted
-- pfam/treefix/{og}.stree 
--  pfam/treefi/{og}.smap
-   - pfam/aligned/{og}\_{hit}.linsi.fa.iqtree
+- pfam/aligned/{og\_id\_hit}.linsi.fa.treefile.rooted
+- pfam/treefix/{og\_id}.stree 
+-  pfam/treefi/{og\_id}.smap
+   - pfam/aligned/{og\_id\_hit}.linsi.fa.iqtree
   - model, extract best-fit model according to BIC
   - *(also uses alignment but not specified as input)*
 
 Output:
-- pfam/treefix/{og}\_{hit}.treefix.tree
-  - copied from pfam/aligned/{og}\_{hit}.treefix.tree
+- pfam/treefix/{og\_id\_hit}.treefix.tree
+  - copied from pfam/aligned/{og\_id\_hit}.treefix.tree
 - ..
    
 
@@ -194,83 +193,18 @@ treefix.models.iqtreemodel.CoarseModel -e \\'-t AA -m \\'\$model\\'\\'
 
 **run\_treefix\_annotate**
 - input:
-    -  pfam/treefix/{og}\_{hit}.treefix.tree
-    -  pfam/treefix/{og}.stree pfam/treefi/{og}.smap
+    -  pfam/treefix/{og\_id\_hit}.treefix.tree
+    -  pfam/treefix/{og\_id}.stree pfam/treefi/{og\_id}.smap
 - output
-    -  pfam/treefix/{og}\_{hit}.treefix.mpr.recon
-    -  ...
+    -  pfam/treefix/{og\_id\_hit}.treefix.mpr.recon
+    -   pfam/treefix/{og\_id\_hit}.treefix.nhx.tree
+    -  ....txt
     
 *tree-annotate -s {input.stree} -S {input.smap} {input.tree}*
 
 
-
-****
-
-
-**parse\_treefix.bash**
-
-tryin gto make notung work
-
-first with example
-
-cdc20 ENSGT00870000136444\_ENSG00000117399
-
-had to get rid of the dubious annotation in gene trees
-
-( NHX duplication = dubious) to make notung work
-
-parsing the parsable.txt and reconciled to get root dups
-
-don’t include the empty internal nodes, but do include all tips/proteins
-
-also include events per species
-
-**notung\_output.json**
-
-pfam\_results\_final.json
-
-made by parse\_tblout\_final\_stats.py
-
-I want to add length of hmm models, and number of orthologs per species
-
-analyse pfam .py
-
-new dict in
-
-og\_id (genetree+gene\_id) = { domain, clan, hmm length, orthologs per
-species \[\], units per species \[\] }
-
-made separate python script for generation of this json file
-
-**analyse\_pfam\_tblout.py** generate pfam\_summary.json and hists?
-
-analyse\_meme
-
-meme\_summary.json 2677
-
-dict with og\_id as key, consensus and repeats dict from
-parse\_tblout\_stats
-
-This repeats dict contains:
-
--   domain = { clan, length, orthologs\_dict = {
-
-    -   protein\_uri : {unit\_count, seq bitscore, units\_dict = {
-
-        -   unit\_number: { dom bitscore, model coordinates, seq
-            > coordinates }
-
-        -   ... } }
-
-    -   ...}
-
--   ...
-
-analyse sequence coverage .py
-
-
-
 ## Meme dataset construction:
+*DRAFT*
 
 Snakefork\_chop
 
@@ -284,51 +218,33 @@ run meme on the fasta\_ogs\_chopped
 which are the ones from todo that have &gt;=3 seq of which one mouse and
 human
 
-**analysis pfam dataset**
 
-generate\_pfam\_dataframe.py
+## Post-processing
+**parse_evo_events(_meme).py**
+Parse TreeFix output by removing inconsistent duplications, inferring events and summarizing duplications/losses of repeat tree  reconciled with gene tree. 
+Net duplications are non-ancestral, taking into account the genetree root instead of vertebrate common ancestor.
 
-makes analysis/pfam/pfam\_dataframe.csv
-
-**Figures:**
-
-Projection on species tree:
-
-analyse pfam adjusted to map to species tree
-
-repeat - integration is done automatically because you map multiple
-genes to the same species if they have paralogs
-
-('Unknown vs total', {'d': 7742, 'l': 19183}, 30042, 107535)
-
-**Dictionaries**
-
--   pfam\_summary.json
-
-    -   key: og\_id\_domain
-
-    -   repeats dict containing: domain = { length,
-
-        -   orthologs\_dict = { protein\_uri : {unit\_count, seq
-            > bitscore,
-
-            -   units\_dict = { unit\_number: { dom bitscore, model
-                > coordinates, seq coordinates }, ... } }, ...} }
-
--   notung\_ete\_summary.json
-
-    -   contains seperate dicts for reconciled repeat / gene tree\
-        > identifier respectively og\_id\_domain and og\_id
-
-    -   identifier = {nD, nL, root\_dup,
-
-        -   events = { node\_name: {d,l} , … },
-
-        -   species = { species\_abbrev : {d,l } ... }, }
-
--   pfam\_evo\_events\_summary.json
-
-    -   contains seperate dicts for reconciled repeat / gene tree\
-        > identifier respectively og\_id\_domain and og\_id
+- Input (glob):
+    -  pfam/treefix/{og\_id\_hit}.treefix.nhx.tree
+       - denovo/treefix/{og\_id\_hit}.treefix.nhx.t
+    - genetrees\_nhx/{og\_id}.nhx
+    - pfam_evo_events_reroot_gt.json
+        - meme_evo_events_reroot_gt.json
+  - ensembl species tree (as defined in pre.species_tree_file)
+- Output: 
+  - pfam/treefix/adjusted/{og\_id\_hit}.ete
+  - pfam/treefix/adjusted/images/{og\_id\_hit}.pdf
+  - log_pfam_rearranged_nodes.json (what nodes are rearranged)
+  -  pfam_evo_events_reroot.json
+(dict with statistics on dup/loss and events from recon repeat-gene tree) 
+     - meme_evo_events_reroot.json
+  - pfam_evo_events_reroot_gt.json
+(dict with statistics on dup/loss and events from recon gene-species tree) 
+     - meme_evo_events_reroot_gt.json
+ 
+*Duplication consistency correction:*
+Remove spurious duplications from repeat tree that have a consistency score of 0 ( adjustable threshold)
+Dup. consistency depends on number of orthologs (count from gene tree)
+Prune/graft gene tree on repeat-tree parts with inconsistent duplications 
 
 

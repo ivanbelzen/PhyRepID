@@ -1,0 +1,11 @@
+#OGs:
+('initial ', 11755, 'Pfam ', 2263, 'MEME ', 2677)
+#human proteins:
+('initial ', 67237, 'pfam ', 3958, 'meme ', 3131, 'total ', 7089)
+#human proteins >=3 unit cnt:
+('initial ', 18719, 'pfam ', 3558, 'meme ', 2952, 'total ', 6510)
+Count the actual number of unique protein ids instead of index
+#human proteins:
+('initial ', 12550, 'pfam ', 2504, 'meme ', 2724, 'total ', 5228)
+#human proteins >=3 unit cnt:
+('initial ', 2836, 'pfam ', 2313, 'meme ', 2633, 'total ', 4946)
