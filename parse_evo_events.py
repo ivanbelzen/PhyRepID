@@ -1,25 +1,31 @@
 ## IvB August 2018
+# Last edit 30-12-2019
 # Parse Treefix by removing inconsistent duplications and counting dup/loss 
-# input: .treefix.nhx.tree (output of Treefix Annotate) and .nhx gene tree and ensembl species tree 
-# output: adjusted repeat tree, image, dict with rearranged nodes, dict with dup/loss/root_dup
-# output paths defined in pre.pfam_treefix_adjusted_path and pre.pfam_treefix_adjusted_images_path
-# output dict rearranged: log_pfam_rearranged_nodes.json
-# output dict dup/loss counts: pfam_evo_events_summary.json
+# PFAM and MEME version => differences in paths and og ids
 
+# input: .treefix.nhx.tree (output of Treefix Annotate) and .nhx gene tree and ensembl species tree 
+# output: adjusted repeat tree and image - paths defined in pipeline methods.py
+# pre.pfam_treefix_adjusted_path and pre.pfam_treefix_adjusted_images_path
+# pre.denovo_treefix_adjusted_path and pre.denovo_treefix_adjusted_images_path
+
+# output dict rearranged: log_pfam_rearranged_nodes.json log_meme_rearranged_nodes.json
+# output dict dup/loss repeat tree vs gene tree: pfam_evo_events.json meme_evo_events.json
+# output dict dup/loss gene tree vs species tree: pfam_evo_events_genetrees.json meme_evo_events_genetrees.json
+
+## Inconsistent duplication correction
 # Remove spurious duplications from repeat tree that have a consistency score below the threshold
-# threshold = 0
-# Dup. consistency depends on number of orthologs (count from gene tree)
+# Default threshold = 0
+# Duplication consistency depends on number of orthologs (count from gene tree)
 # Prune/graft gene tree on repeat-tree parts with inconsistent duplications
 
+## Basic algorithm
 # Count duplications/losses using tree reconciliation with gene tree
-# Count dup/loss in gene tree compared to species tree
-# Calculate number of netto duplications (after vertebrate ancestor)
+# Count dup/loss in gene tree compared to species tree => 
+# Calculate number of netto duplications (after vertebrate ancestor as defined in gene tree)
 
-#TODO:
-# Dup threshold changes >1 do not work well it seems (27-08-18)
-# Output dict with evo events for every node instead of just total
-# Toggle image output for debug/visualisation 
-# Bug: layout species coloring changes name so should be left on??
+## Notes:
+# Dup threshold >1 does not work well it seems (27-08-18)
+# Note layout species coloring changes name so should be left on??
 
 from ete3 import Tree, TreeStyle, NodeStyle, TextFace, PhyloTree, AttrFace, CircleFace, faces
 import sys, glob, json 
@@ -27,10 +33,15 @@ import os.path
 import pipeline_methods as pre
 import numpy as np
 
-#settings
+
+## Settings
 dupconsistency_threshold = 0
 root_nodes = ['t117571','t7742', 't7711', 't33213']
 node_projection = { 't32525': ['t9347', 't1437010', 't314147'], 't8287': ['t32523'], 't186625':['t186626'], 't41665': ['t1489872'], 't117571':['t7742', 't7711', 't33213']}
+colour_list = ['lightgrey','dimgrey','darkgrey','rosybrown','sienna','powderblue','olive'] #used for coloring nodes
+species_mapping = pre.get_species_mapping_full(pre.species_mapping_file)
+protein_dict = {} #for colours and naming
+
 
 ## Define functions for parsing ETE trees
 
@@ -113,7 +124,6 @@ def species_colouring(node):
 		faces.add_face_to_node(name_face, node, column=0, position="branch-right")
 		node.set_style(ns)
 			
-
 def duplication_colouring(node):
 	if getattr(node,"evoltype", None) == "D":
 		ns = NodeStyle()	
@@ -127,50 +137,14 @@ def duplication_colouring(node):
 			#faces.add_face_to_node(name_face, node, column=0, position="branch-right")
 		node.set_style(ns)	
 		
-#used for coloring nodes
-colour_list = ['lightgrey','dimgrey','darkgrey','rosybrown','sienna','powderblue','olive']
-species_mapping = pre.get_species_mapping_full(pre.species_mapping_file)
-protein_dict = {} 
 
-#Logs and output files
-output_image = True #Outputs tree as PDF, True for debugging and visualisation, False for production purposes
-output_adjusted_repeat_tree = True
+## Reconcile gene tree with species tree 
+# do not merge with other reconciliation loop to prevent duplications or overwriting in dict
+# need to reload and parse genetree with other species names to reconcile with Ensembl species tree
 
-'''
-rearranged_nodes_log_file = pre.root+'log_pfam_rearranged_nodes.json'
-if pre.file_notempty(rearranged_nodes_log_file):
-	with open(rearranged_nodes_log_file,'r') as log:
-		rearranged_log = json.load(log)
-else: rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
-#print('Overwriting existing rearranged nodes log', rearranged_nodes_log_file)
-'''
-
-rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
-
-evo_events_log_file = pre.root+'pfam_evo_events_reroot_gt.json'
-evo_events_log = {'repeat':{}, 'genetree':{}}
-
-if pre.file_notempty(evo_events_log_file):
-	with open(evo_events_log_file,'r') as log:
-		evo_events_log = json.load(log)
-else: evo_events_log = {'repeat':{}, 'genetree':{}}
-#print('Overwriting existing evo events log', evo_events_log_file)
-
-#Dataset as input
-treefix_ext = '.treefix.nhx.tree'
-genetree_ext = '.nhx'
-#genetree_ext = '.stree'
-genetree_file_list = glob.glob(pre.genetree_path + '*' + genetree_ext )
-#genetree_file_list = glob.glob(pre.pfam_treefix_path + '*' + genetree_ext )  
-treefix_file_list = glob.glob(pre.pfam_treefix_path + '*' + treefix_ext ) 
-
-#Gene tree events
-# do not merge with other loop to prevent duplications or overwriting in dict
-#need to reload and parse genetree with other species names to reconcile with Ensembl species tree
-
-#'''
-for treefix_file in treefix_file_list:
-	og_id_domain = treefix_file[len(pre.pfam_treefix_path):-len(treefix_ext)]
+def reconcile_gene_species_tree():
+	for treefix_file in treefix_file_list:
+	og_id_domain = treefix_file[len(treefix_path):-len(treefix_ext)]
 	og_id = '_'.join(og_id_domain.split('_')[0:2])
 	
 	genetree_file = pre.genetree_path+og_id+genetree_ext
@@ -182,15 +156,8 @@ for treefix_file in treefix_file_list:
 		gene_tree_string = pre.make_valid_nhx(gene_tree_string)
 	gene_tree = PhyloTree(gene_tree_string, format=1, sp_naming_function=parse_genetree_sp)
 	
-	if og_id in evo_events_log['genetree']: 
-		evo_events_log['genetree'][og_id]['root']=gene_tree.name
-		with open(evo_events_log_file, 'w') as log:
-			log.write(json.dumps(evo_events_log))
-		continue
-	
 	evo_events_log['genetree'][og_id]={}
-	
-	
+		
 	with open(pre.species_tree_file, 'r') as species_tree_string:
 		species_tree_string = species_tree_string.read()
 	species_tree = PhyloTree(species_tree_string, format=1, sp_naming_function=parse_ensembl_sp)
@@ -201,25 +168,21 @@ for treefix_file in treefix_file_list:
 	recon_genetree, events = gene_tree.reconcile(species_tree)
 	events = get_evo_events(recon_genetree) #define myself instead of using ETE events
 	evo_events_log['genetree'][og_id] = events
+	evo_events_log['genetree'][og_id]['root']=gene_tree.name
 
-	with open(evo_events_log_file, 'w') as log:
+	with open(evo_events_genetrees_log_file, 'w') as log:
 		log.write(json.dumps(evo_events_log))
-#'''	
-'''	
-for treefix_file in treefix_file_list:
-	og_id_domain = treefix_file[len(pre.pfam_treefix_path):-len(treefix_ext)]
-	
-	if pre.file_notempty(pre.pfam_treefix_adjusted_images_path+og_id_domain+".pdf"): continue
-	#if og_id_domain in evo_events_log['repeat']: continue
-	
-	og_id = '_'.join(og_id_domain.split('_')[0:2])
-	
-	#if og_id != 'ENSGT00840000129704_ENSG00000188283': continue
 
+## Reconcile repeat tree with gene tree
+
+def reconcile_repeat_gene_tree():
+	for treefix_file in treefix_file_list:
+	og_id_domain = treefix_file[len(treefix_path):-len(treefix_ext)]
+	og_id = '_'.join(og_id_domain.split('_')[0:2])
+		
 	genetree_file = pre.genetree_path+og_id+genetree_ext
 	if not pre.file_notempty(genetree_file):
 		continue
-		#genetree_file = pre.pfam_treefix_path+og_id+'.stree'
 	
 	print(og_id_domain)
 	
@@ -294,9 +257,6 @@ for treefix_file in treefix_file_list:
 			if consistency is not None:
 				node.add_feature('consistency', consistency)	
 			
-			#if node.consistency >= dupconsistency_threshold:
-			#	consistent_dups+=1
-
 			if node.consistency <= dupconsistency_threshold and len(children) < 8: #only rearrange terminal dups
 				#print( c1, c2, node )
 				
@@ -325,8 +285,6 @@ for treefix_file in treefix_file_list:
 				node.add_sister(rearranged)
 				node.detach()
 				node.delete()
-	
-	
 
 	##Parsing evolutionary events
 	#Repeat tree events
@@ -336,7 +294,7 @@ for treefix_file in treefix_file_list:
 	
 	#output adjusted repeat tree
 	if output_adjusted_repeat_tree is True:	
-		recon_tree.write(format=1, features=['evoltype','T'], outfile=pre.pfam_treefix_adjusted_path+og_id_domain+'.ete')
+		recon_tree.write(format=1, features=['evoltype','T'], outfile=output_adjusted_path+og_id_domain+'.ete')
 	
 	if output_image is True:
 		ts = TreeStyle()
@@ -345,19 +303,56 @@ for treefix_file in treefix_file_list:
 		ts.show_branch_support = False
 		ts.complete_branch_lines_when_necessary = False
 		ts.title.add_face(TextFace(og_id_domain, fsize=18), column=0)
-		#ts.mode = "c"
-		#ts.arc_start = -180 
-		#ts.arc_span = 180
 		ts.layout_fn = [species_colouring, duplication_colouring]
 		#recon_tree.show( tree_style = ts)
-		img_name = pre.pfam_treefix_adjusted_images_path+og_id_domain+".pdf"
+		img_name = output_images_path+og_id_domain+".pdf"
 		recon_tree.render(img_name, tree_style = ts)
-	' ''
+	
 	#Write logs
 	with open(rearranged_nodes_log_file, 'w') as log:
 		log.write(json.dumps(rearranged_log))
 	
 	with open(evo_events_log_file, 'w') as log:
 		log.write(json.dumps(evo_events_log))
-	' ''
-'''
+
+
+##Settings for PFAM and MEME
+output_images_path = pre.pfam_treefix_adjusted_images_path
+output_adjusted_path = pre.pfam_treefix_adjusted_path
+treefix_path = pre.pfam_treefix_path
+
+output_image = True #Outputs tree as PDF, True for debugging and visualisation, False for production purposes
+output_adjusted_repeat_tree = True
+
+rearranged_nodes_log_file = pre.root+'log_pfam_rearranged_nodes.json'
+rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
+
+evo_events_log_file = pre.root+'pfam_evo_events.json'
+evo_events_genetrees_log_file = pre.root+'pfam_evo_events_genetrees.json'
+evo_events_log = {'repeat':{}, 'genetree':{}}
+
+treefix_ext = '.treefix.nhx.tree'
+genetree_ext = '.nhx'
+genetree_file_list = glob.glob(pre.genetree_path + '*' + genetree_ext )
+treefix_file_list = glob.glob(treefix_path + '*' + treefix_ext ) 		
+
+reconcile_gene_species_tree()
+reconcile_repeat_gene_tree()
+
+## MEME
+
+rearranged_nodes_log_file = pre.root+'log_meme_rearranged_nodes.json'
+rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
+
+evo_events_log_file = pre.root+'meme_evo_events.json'
+evo_events_genetrees_log_file = pre.root+'meme_evo_events_genetrees.json'
+evo_events_log = {'repeat':{}, 'genetree':{}}
+
+output_images_path = pre.denovo_treefix_adjusted_images_path
+output_adjusted_path = pre.denovo_treefix_adjusted_path
+treefix_path = pre.denovo_treefix_path
+
+reconcile_gene_species_tree()
+reconcile_repeat_gene_tree()
+
+## Finished
