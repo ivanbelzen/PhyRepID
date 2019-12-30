@@ -13,15 +13,15 @@ if len(sys.argv) < 2:
 og_id = sys.argv[1] 
 
 itol_template_path = pre.root+'analysis/itol/'
-#itol_template_path = '/home/ivb/pre-analysis/itol/'
 	
 shape = 'RE'
 colour = '#00aedb'
 padding = 5
 
-with open('pfam_summary.json', 'r') as output: pfam_summary = json.load(output)
-with open('meme_summary2.json', 'r') as output: meme_summary = json.load(output)
+with open(pre.root+"pfam_repeat_stats.json", 'r') as output: pfam_summary = json.load(output)
+with open(pre.root+"meme_repeat_stats.json", 'r') as output: meme_summary = json.load(output)
 	
+pfam_initial_filtered_output_file=pre.root+"pfam_repeat_stats_initial_filtered.json"
 
 def generate_domain_string(orthologs_dict,label,colour='#0099ff'):
 	template_string = ''
@@ -42,7 +42,7 @@ def generate_domain_string(orthologs_dict,label,colour='#0099ff'):
 
 
 def generate_label_string_repeats(orthologs_dict,label):
-	species_mapping = pre.get_species_mapping_full('ensembl_stable_id_species.json')
+	species_mapping = pre.get_species_mapping_full(pre.species_mapping_file)
 	
 	template_string = ''
 	for protein_id,orth_val in orthologs_dict.items():
@@ -59,13 +59,12 @@ def generate_label_string_repeats(orthologs_dict,label):
 				name = species_mapping[ensembl_id]['common_name']
 			else: name = ensembl_id
 			
-			#template_string += protein_id+' '+label+' '+str(units_id)+" "+str(b)+'-'+str(e)+','+name+' '+str(units_id)+'\n'	
 			template_string += protein_id+'_'+label+'_'+str(units_id)+"_"+str(b)+'-'+str(e)+','+name+'_'+str(units_id)+'\n'	
 			
 	return(template_string)
 
 def generate_label_string_genetree(orthologs_dict):
-	species_mapping = pre.get_species_mapping_full('ensembl_stable_id_species.json')
+	species_mapping = pre.get_species_mapping_full(pre.species_mapping_file)
 	
 	template_string = ''
 	for protein_id,orth_val in orthologs_dict.items():			
@@ -77,7 +76,8 @@ def generate_label_string_genetree(orthologs_dict):
 		template_string += protein_id+','+name+'\n'	
 			
 	return(template_string)
-#'''
+
+
 if not pre.file_notempty(itol_template_path+og_id+'_domains.txt'):
 	template_string = 'DATASET_DOMAINS\nSEPARATOR COMMA\nDATASET_LABEL,domains\nCOLOR,#ff0000\nDATA\n'
 
@@ -100,14 +100,12 @@ else:
 
 if pre.file_notempty(itol_template_path+og_id+'_domains_initial.txt'):
 	print('File initial already exists for',og_id)
-	#quit()
-#'''
+
+
 elif len(sys.argv)>2 and 'initial' in sys.argv[2]:
-	with open('initial_pfam_filtered.json', 'r') as output:
-	#with open('pfam_summary_initial_gacutoff.json', 'r') as output:
+	with open(pfam_initial_filtered_output_file, 'r') as output:
 		pfam_summary_initial = json.load(output)
 
-	#real_og_id = '_'.join(og_id.split('_')[0:2])
 	real_og_id = og_id #need the og_id_domain for the filtered mapping and otherwise real og id (without domain)
 	colour_list = ['#4cc88a']
 	template_string = 'DATASET_DOMAINS\nSEPARATOR COMMA\nDATASET_LABEL,initial\nCOLOR,#4cc88a\nDATA\n'
