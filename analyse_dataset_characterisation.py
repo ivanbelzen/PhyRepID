@@ -1,6 +1,7 @@
 ## IvB August 2018
-# making plots of pfam summary.json
-
+#Needs refactoring still!
+# Note old meme_summary.json  pfam summary.json etc
+ 
 import sys, os, glob, json
 import numpy as np
 import pipeline_methods as pre
@@ -138,7 +139,7 @@ def create_dataframe_meme_summary(meme_summary,orth_filter=True):
 with open(pre.root+'pfam_summary.json', 'r') as pfam_output:
 	pfam_summary = json.load(pfam_output)
 
-with open(pre.root+'pfam_summary_initial.json', 'r') as pfam_output:
+with open(pre.root+'pfam_repeat_stats_initial.json', 'r') as pfam_output:
 	pfam_summary_initial = json.load(pfam_output)
 
 #make general Pfam dataframe
@@ -156,7 +157,7 @@ for og_id_domain in pfam_summary.keys():
 	if og_id_domain not in filtered_pfam_summary_initial: filtered_pfam_summary_initial[og_id_domain] = {}
 	filtered_pfam_summary_initial[og_id_domain][domain] = pfam_summary_initial[og_id][domain]
 
-with open('initial_pfam_filtered.json','w') as output:
+with open('pfam_repeat_stats_initial_filtered.json','w') as output:
 	output.write(json.dumps(filtered_pfam_summary_initial))
 
 initial_detailed_df = create_dataframe_pfam_summary(filtered_pfam_summary_initial)	
@@ -241,7 +242,7 @@ pfam_df = create_dataframe_pfam_summary(pfam_summary,orth_filter=False)
 with open(analysis_path_datachar+'pfam_df_nofilter.json','w') as output:
 	output.write(json.dumps(pfam_df.to_dict()))
 
-with open(pre.root+'pfam_summary_initial.json', 'r') as pfam_output:
+with open(pre.root+'pfam_repeat_stats_initial.json', 'r') as pfam_output:
 	pfam_summary_initial = json.load(pfam_output)
 initial_df = create_dataframe_pfam_summary(pfam_summary_initial,orth_filter=False)
 with open(analysis_path_datachar+'initial_df_nofilter.json','w') as output:

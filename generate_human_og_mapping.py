@@ -5,13 +5,7 @@
 # make dict of lists of og_id -> [human protein ids] for Pfam and MEME.
 # Last edit 30-12-2019
 
-# Input: pfam_evo_events.json meme_evo_events.json schaper_summary_denovo.json  schaper_summary.json (for pfam)
-
-# Schaper summary contains info per pair of orthologs, protein IDs
-# PRE evo events summary contains dup/loss per node/ortholog in an OG and in total 
-
-# To compare schaper and PRE collapse info on OG level
-# So for every OG, consider the human proteins in it
+# To compare schaper and PRE collapse info on OG level, so consider the human proteins in every OG
 
 import sys,json
 import pandas as pd
@@ -20,7 +14,7 @@ import pipeline_methods as pre
 import numpy as np
 import seaborn as sns
 
-human_mapping_file = pre.root+'og_human_mapping_reroot.json'
+human_mapping_file = pre.root+'og_human_mapping.json'
 
 og_id_human_dict = {'pfam':{},'meme':{}}
 
