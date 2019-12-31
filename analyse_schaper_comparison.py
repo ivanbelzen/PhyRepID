@@ -1,52 +1,99 @@
-# IvB analyse schaper overlap with PRE denovo data
-# Edit 17-09-2018
-# Input: pfam_evo_events.json meme_evo_events.json schaper_summary_denovo.json  schaper_summary.json (for pfam)
+## NOTE PARTIAL
+
+# IvB Analyse schaper overlap with PhyRepID data
+# 17-09-2018
+# Last edit 31-12-2019
+# Input PhyRepID: pfam_evo_events.json meme_evo_events.json 
+# Input Schaper: eukaryotic_pairwise_repeat_unit_phylogenies_PFAM.newick eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick
+# Output: schaper_comparison.json
+
+# PhyRepID evo events contains dup/loss per node/ortholog in an OG and in total 
 
 # Schaper summary contains info per pair of orthologs, protein IDs
-# PRE evo events summary contains dup/loss per node/ortholog in an OG and in total 
-
-# To compare schaper and PRE collapse info on OG level
-# So for every OG, consider the human proteins in it
-# Look at what Schaper has to say about the cherries with these human proteins and vertebrates
+# Hence to compare it is necessary to collapse info on OG level: so for every OG, consider the human proteins in it
+# Uses OG to human gene mapping --> file generate_human_protein_mapping.py
+# Look at what Schaper has to say about the cherries with these human proteins and vertebrates we also used
 # Ignore none and not assigned, only look at  slightly/perfectly separated and conserved 
-
-#Both PFAM and MEME on one big pile of data
-# TODO search for MEME ogs also in pfam data and vice versa
 
 import sys,json
 import pandas as pd
-import matplotlib.pyplot as plt
 import pipeline_methods as pre
 import numpy as np
-import seaborn as sns
+import gzip 
 
-#analysis_path_schaper = pre.root+'analysis/schaper_25102018/'
-analysis_path_schaper = pre.root+'analysis/schaper_01112018/'
-human_protein_file = 'og_human_mapping_reroot.json'
-#Generate OG to human gene mapping --> file generate_human_protein_mapping.py
+schaper_files = [pre.root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_PFAM.newick.gz', pre.root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick.gz']
+human_mapping_file = pre.root+'og_human_mapping.json'
 
-schaper_file = 'schaper_summary.json'
-schaper_file_denovo = 'schaper_summary_denovo.json'
+schaper_data = {} # human ortholog clan pfam_hit relationship
 
-human_df_file = pre.root+'analysis/human_evo_events/full_lineage_trace/human_summary_df.json'
-combined_summary_df_file = pre.root+'analysis/evo_events_06102018/pre_dataset_df.json'
+schaper_summary_df_file = 'schaper_comparison.json' #used in phyrepid export
+schaper_df_file = 'schaper_detailed_df_reroot.json' #maybe interesting as export table s well
 
-schaper_summary_df_file = 'schaper_summary_df_reroot.json'
-schaper_df_file = 'schaper_detailed_df_reroot.json'
+## Build Schaper data dictionary
 
-#make schaper dataframe
-'''
+#Only compare to species in our pipeline
+species_selection_lst = []
+with open(pre.species_file,'r') as sp_mapping:
+	species_dict = json.load(sp_mapping)
+	for item in species_dict:
+		species_selection_lst.append(item['ensembl_stable_id'])					
+ 
+#Load Pfam data
+clans = pre.get_pfam_clans(pre.pfam_clans_file) #pfam hit to clan mapping
+pfam_accession = {} #maps pfam accession ID to hit name
+with open(pre.pfam_clans_file, 'r') as pfam_file: 
+	for rows in pfam_file:
+		cols = rows.strip().split('\t')
+		pfam_accession[cols[0]] = cols[3]	
+			
+for filename in schaper_files:
+	with gzip.open(filename, 'r') as f:
+		for line in f: print(line)
+			if line[0] != '>': continue
+			param = {}
+				
+			for col in line.strip().split(' '):
+				key,value = col.split(':')
+				param[key] = value
+				
+			#ignore all inconclusive entries		
+			if 'Pairwise_phylogeny_type' not in param: continue
+			
+			phylogeny_type = param['Pairwise_phylogeny_type']
+			human_protein_id = param['Ensembl_Protein_ID_Human_Ortholog']
+			ortholog = param['Ensembl_Protein_ID_Second_Ortholog']
+			identifier = ortholog.split('0') #assumption correct that always starts with 0??
+			identifier = identifier[0][:-1] #only need first part (species) and remove trailing P as indication for protein
 
-with open(schaper_file, 'r') as schaper:
-	schaper_dict = json.load(schaper)
-	
-with open(schaper_file_denovo, 'r') as schaper:
-	schaper_denovo_dict = json.load(schaper)
-	
-with open(human_protein_file, 'r') as human_proteins:
-	og_human_mapping = json.load(human_proteins)
+			#Only compare species also in our dataset					
+			if identifier not in species_selection_lst: continue
+				
+			if human_protein_id not in schaper_data:
+				schaper_data[human_protein_id] = {}
+			
+			if ortholog not in schaper_data[human_protein_id]:
+				schaper_data[human_protein_id][ortholog] = {}
+			
+			if "PFAM" in filename: 
+				pfam_id = param['TR_detection_type']
+				pfam_name = pfam_accession[pfam_id] if pfam_id in pfam_accession else 'denovo'
+				pfam_clan = clans[pfam_name] if pfam_name in clans else 'denovo'
+				
+				if pfam_clan not in schaper_data[human_protein_id][ortholog]:
+					schaper_data[human_protein_id][ortholog][pfam_clan] = {}
+				schaper_data[human_protein_id][ortholog][pfam_clan][pfam_name]=phylogeny_type
+			else:
+				schaper_data[human_protein_id][ortholog]["denovo"]["denovo"]=phylogeny_type
 
-#clans_dict = pre.get_pfam_clans('Pfam-A.clans.tsv')
+###
+
+
+# Make Schaper dataframe
+
+with open(human_mapping_file, 'r') as human_proteins:
+	mapping = json.load(human_proteins)
+
+og_human_mapping = mapping["pfam"].update(mapping["meme"])  #make one big dictionary to prevent looping twice
 
 schaper_df_columns = ['identifier', 'human_protein', 'ortholog_id', 'schaper_model', 'schaper_conclusion']
 schaper_df_rows = []
@@ -54,72 +101,26 @@ schaper_df_rows = []
 schaper_summary_cols = ['identifier','schaper_model', 'schaper_sli_sep', 'schaper_per_sep', 'schaper_model_cnt'] 
 schaper_summary_rows = [] #per OG: model, clan, netto dup, loss, perfectly separated, slightly separated
 
-meme_in_pfam = []
-for og_id,human_list in og_human_mapping['meme'].items(): 
+for og_id_domain,human_list in og_human_mapping.items(): 
 	models_list = [];schaper_sli_sep = 0;schaper_per_sep = 0;common_model = '';
-	to_add_or_not_to_add = False
-	
-	for human_protein,orthologs_list in human_list.items():	 
-		if human_protein in schaper_denovo_dict:
-			to_add_or_not_to_add = True
-			schaper_data = { orth:vals for (orth,vals) in schaper_denovo_dict[human_protein].items() if orth in orthologs_list }
-			cherries_cnt = len(schaper_data)
-			for orth,schaper_conclusion in schaper_data.items():
-				if 'perfectly_separated' in schaper_conclusion: schaper_per_sep+=1
-				elif 'strongly_separated' in schaper_conclusion: schaper_sli_sep+=1
-				schaper_df_rows.append([og_id, human_protein, orth, schaper_conclusion]) 
-		
-		elif human_protein in schaper_dict: #exists appearantly
-			to_add_or_not_to_add = True
-			schaper_data = { orth:vals for (orth,vals) in schaper_dict[human_protein].items() if orth in orthologs_list }
-			cherries_cnt = len(schaper_data)
-			for orth,vals in schaper_data.items():
-				for clan,hits in vals.items():
-					for model,schaper_conclusion in hits.items():
-						if model not in models_list: models_list.append(model)
-				
-						if 'perfectly_separated' in schaper_conclusion: schaper_per_sep+=1
-						elif 'strongly_separated' in schaper_conclusion: schaper_sli_sep+=1	
-			if len(models_list) > 0:
-				common_model = max(set(models_list), key=models_list.count)	
-			
-	if to_add_or_not_to_add:		
-		schaper_summary_rows.append([og_id,common_model,schaper_sli_sep,schaper_per_sep,cherries_cnt] )
-
-
-pfam_in_denovo = []		
-for og_id_domain,human_list in og_human_mapping['pfam'].items(): 
-	models_list = [];schaper_sli_sep = 0;schaper_per_sep = 0;common_model = '';
-	to_add_or_not_to_add = False
 	
 	for human_protein,orthologs_list in human_list.items():	 	 
-		if human_protein in schaper_dict:
-			to_add_or_not_to_add = True
-			schaper_data = { orth:vals for (orth,vals) in schaper_dict[human_protein].items() if orth in orthologs_list }
-			cherries_cnt = len(schaper_data)
-			for orth,vals in schaper_data.items():
+		if human_protein in schaper_data:
+			schaper_entry = { orth:vals for (orth,vals) in schaper_data[human_protein].items() if orth in orthologs_list }
+			cherries_cnt = len(schaper_entry)
+			for orth,vals in schaper_entry.items():
 				for clan,hits in vals.items():
 					for model,schaper_conclusion in hits.items():
 						if model not in models_list: models_list.append(model)
-				
 						if 'perfectly_separated' in schaper_conclusion: schaper_per_sep+=1
 						elif 'strongly_separated' in schaper_conclusion: schaper_sli_sep+=1
 						schaper_df_rows.append([og_id_domain, human_protein, orth, model, schaper_conclusion]) 
 					
 			if len(models_list) > 0:
 				common_model = max(set(models_list), key=models_list.count)		
+			schaper_summary_rows.append([og_id_domain,common_model,schaper_sli_sep,schaper_per_sep,cherries_cnt] )
 		
-		elif human_protein in schaper_denovo_dict:
-			to_add_or_not_to_add = True
-			schaper_data = { orth:vals for (orth,vals) in schaper_denovo_dict[human_protein].items() if orth in orthologs_list }
-			cherries_cnt = len(schaper_data)
-			for orth,schaper_conclusion in schaper_data.items():
-				if 'perfectly_separated' in schaper_conclusion: schaper_per_sep+=1
-				elif 'strongly_separated' in schaper_conclusion: schaper_sli_sep+=1
-				#schaper_df_rows.append([og_id, human_protein, orth, schaper_conclusion]) 
-			
-	if to_add_or_not_to_add:		
-		schaper_summary_rows.append([og_id_domain,common_model,schaper_sli_sep,schaper_per_sep,cherries_cnt] )			
+quit()
 
 #write detailed df
 schaper_df = pd.DataFrame(schaper_df_rows, columns=schaper_df_columns)
@@ -130,13 +131,14 @@ with open(schaper_df_file, 'w') as output:
 
 #summary df
 schaper_summary_df = pd.DataFrame(schaper_summary_rows, columns=schaper_summary_cols)
-schaper_summary_df['schaper_pos'] = np.where(((schaper_summary_df['schaper_sli_sep'] > 0) |\
- (schaper_summary_df['schaper_per_sep'] > 0) ), 'True', 'False')
+schaper_summary_df['schaper_positive'] = np.where(((schaper_summary_df['schaper_sli_sep'] > 0) | (schaper_summary_df['schaper_per_sep'] > 0) ), 'True', 'False')
 
 #write schaper df
 with open(schaper_summary_df_file, 'w') as output:
 	output.write(json.dumps(schaper_summary_df.to_dict()))
 
+
+####
 '''
 
 ## Analysis
