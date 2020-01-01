@@ -122,7 +122,7 @@ combined_summary_df['PRD_score']= (combined_summary_df['netto_dup']-mean_netto_d
 
 # Export
 
-combined_summary_df.to_csv(phyrepid_results_simple, separator='\t')	
+combined_summary_df.to_csv(phyrepid_results_simple, sep='\t')	
 
 print('#OGs in total ',len(combined_summary_df.index))
 print('#OGs >0 PRD score ', len(combined_summary_df.loc[combined_summary_df['PRD_score']>0].index))
@@ -219,7 +219,7 @@ if pre.file_notempty(schaper_comparison_file):
 
 
 #Export
-combined_summary_df.to_csv(phyrepid_results_full, separator='\t')	
+combined_summary_df.to_csv(phyrepid_results_full, sep='\t')	
 
 
 #ToDo: re-instate unit count
