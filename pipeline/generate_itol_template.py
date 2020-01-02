@@ -12,7 +12,7 @@ if len(sys.argv) < 2:
 	
 og_id = sys.argv[1] 
 
-itol_template_path = pre.root+'analysis/itol/'
+itol_template_path = pre.root+'itol/'
 	
 shape = 'RE'
 colour = '#00aedb'
