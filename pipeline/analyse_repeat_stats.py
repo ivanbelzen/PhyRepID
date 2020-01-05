@@ -16,18 +16,18 @@ import seaborn as sns
 
 species_mapping = pre.get_species_mapping(pre.species_mapping_file)
 
-pfam_output_file="pfam_repeat_stats.json"
-meme_output_file="meme_repeat_stats.json"
+pfam_output_file=pre.pfam_repeat_stats_file
+meme_output_file=pre.meme_repeat_stats_file
 
 flag_generate_initial=True
 pfam_initial_path = pre.pfam_hmm_path
-pfam_initial_output_file="pfam_repeat_stats_initial.json"
-pfam_initial_filtered_output_file="pfam_repeat_stats_initial_filtered.json"
+pfam_initial_output_file = pre.pfam_repeat_stats_initial_file
+pfam_initial_filtered_output_file = pre.pfam_repeat_stats_initial_filtered_file
 
 #Report OGs that have repeats in less than 4 proteins, possibly exclude if desired.
 flag_report_lt4=False
-pfam_exclude_ogs_file="exclude_ogs_lt4_pfam.lst"
-meme_exclude_ogs_file="exclude_ogs_lt4_meme.lst"
+pfam_exclude_ogs_file=pre.root+"exclude_ogs_lt4_pfam.lst"
+meme_exclude_ogs_file=pre.root+"exclude_ogs_lt4_meme.lst"
 
 ## Generate PFAM summary
 pfam_summary = {}

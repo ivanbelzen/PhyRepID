@@ -23,28 +23,28 @@ import pipeline_methods as pre
 import numpy as np
 
 #Output files
-phyrepid_results_simple=pre.root+'phyrepid_results_simple.tsv'
-phyrepid_results_full=pre.root+'phyrepid_results_full.tsv'
+phyrepid_results_simple=pre.phyrepid_results_simple
+phyrepid_results_full=pre.phyrepid_results_full
 
 #Input
 clans_dict = pre.get_pfam_clans(pre.pfam_clans_file)
 
 #repeat stats
-pfam_repeat_stats_file = pre.root+'pfam_repeat_stats.json'
-meme_repeat_stats_file = pre.root+'meme_repeat_stats.json'
+pfam_repeat_stats_file = pre.pfam_repeat_stats_file
+meme_repeat_stats_file = pre.meme_repeat_stats_file
 
 #evo events
-pfam_results_file = pre.root+'pfam_evo_events.json'
-meme_results_file = pre.root+'meme_evo_events.json'
-pfam_gt_file = pre.root+"pfam_evo_events_genetrees.json"
-meme_gt_file = pre.root+"meme_evo_events_genetrees.json"
+pfam_results_file = pre.pfam_evo_events_file
+meme_results_file = pre.meme_evo_events_file
+pfam_gt_file = pre.pfam_evo_gt_file
+meme_gt_file = pre.meme_evo_gt_file
 
 # Additional datasets - fils not required 
-selectome_file = pre.root+'resources/selectome.tsv' #needs human mapping 
-human_mapping_file = pre.root+'og_human_mapping.json' #OG to human gene mapping from generate_human_protein_mapping.py
-exac_data_file = pre.root+'resources/fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt' #needs gene symbol
-human_gene_symbol_file = pre.root+'resources/human_gene_symbol.tsv'
-schaper_comparison_file = pre.root+'schaper_comparison.json' #output from analyse_schaper_comparison.py
+selectome_file = pre.selectome_file #needs human mapping 
+human_mapping_file = pre.human_mapping_file #OG to human gene mapping from generate_human_protein_mapping.py
+exac_data_file = pre.exac_file #needs gene symbol
+human_gene_symbol_file = pre.human_gene_symbol_file
+schaper_comparison_file = pre.schaper_comparison_file #output from analyse_schaper_comparison.py
 
 ## Make dataframe evo events summary (repeat tree reconcilition)
 

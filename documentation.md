@@ -234,7 +234,9 @@ For the gene duplications, count dup/loss in gene tree compared to species tree
   - ensembl species tree 
 - Output: 
   - pfam/treefix/adjusted/{og\_id\_hit}.ete
+     - denovo/treefix/adjusted/{og\_id\_hit}.ete
   - pfam/treefix/adjusted/images/{og\_id\_hit}.pdf
+    - denovo/treefix/adjusted/images/{og\_id\_hit}.pdf
   - dict with what nodes are rearranged:
    log_pfam_rearranged_nodes.json / log_meme_rearranged_nodes.json
   - output dict dup/loss repeat tree vs gene tree: pfam_evo_events.json / meme_evo_events.json

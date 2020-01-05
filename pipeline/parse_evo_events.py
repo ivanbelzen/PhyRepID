@@ -36,8 +36,8 @@ import numpy as np
 
 ## Settings
 dupconsistency_threshold = 0
-root_nodes = ['t117571','t7742', 't7711', 't33213']
-node_projection = { 't32525': ['t9347', 't1437010', 't314147'], 't8287': ['t32523'], 't186625':['t186626'], 't41665': ['t1489872'], 't117571':['t7742', 't7711', 't33213']}
+root_nodes = pre.root_nodes 
+node_projection = pre.node_projection
 colour_list = ['lightgrey','dimgrey','darkgrey','rosybrown','sienna','powderblue','olive'] #used for coloring nodes
 species_mapping = pre.get_species_mapping_full(pre.species_mapping_file)
 protein_dict = {} #for colours and naming
@@ -327,8 +327,8 @@ output_adjusted_repeat_tree = True
 rearranged_nodes_log_file = pre.root+'log_pfam_rearranged_nodes.json'
 rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
 
-evo_events_log_file = pre.root+'pfam_evo_events.json'
-evo_events_genetrees_log_file = pre.root+'pfam_evo_events_genetrees.json'
+evo_events_log_file = pre.pfam_evo_events_file
+evo_events_genetrees_log_file = pre.pfam_evo_gt_file
 evo_events_log = {'repeat':{}, 'genetree':{}}
 
 treefix_ext = '.treefix.nhx.tree'
@@ -344,8 +344,8 @@ reconcile_repeat_gene_tree()
 rearranged_nodes_log_file = pre.root+'log_meme_rearranged_nodes.json'
 rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
 
-evo_events_log_file = pre.root+'meme_evo_events.json'
-evo_events_genetrees_log_file = pre.root+'meme_evo_events_genetrees.json'
+evo_events_log_file = pre.meme_evo_events_file
+evo_events_genetrees_log_file = pre.meme_evo_gt_file
 evo_events_log = {'repeat':{}, 'genetree':{}}
 
 output_images_path = pre.denovo_treefix_adjusted_images_path

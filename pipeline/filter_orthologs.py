@@ -13,14 +13,15 @@ import numpy as np
 import pipeline_methods as pre
 		
 root = '/home/ianthe/protein-repeat-evolution/'
-ogs_file = root+'orthologs.json'
-species_file = root+'ensembl_stable_id_species.json'
 
-filtered_ogs_file = root+'orthologs_filtered.json'
-excluded_orth_rel_file = root + 'excluded_orth_rel.json'
-excluded_pairs_file = root + 'excluded_pairs.json'
+ogs_file = pre.orthologs_file
+species_file = pre.species_mapping_file
+ogs_file = pre.filtered_ogs_file
 
-taxon_uri =  'http://identifiers.org/taxonomy/'
+excluded_orth_rel_file = pre.root + 'excluded_orth_rel.json'
+excluded_pairs_file = pre.root + 'excluded_pairs.json'
+
+taxon_uri =  pre.taxon_uri
 #species_groups = [['13616','9305'],['8839','9031'],['31033','69293']]
 
 species_shared_cutoff = 10
@@ -58,11 +59,6 @@ mapping = pre.filter_close_pairs(mapping, species_groups)
 mapping = pre.filter_min_proteins(mapping, number_orthologs_cutoff)		
 print("#OGs with max "+str(orth_rel_cutoff)+" orth per species: " ,len(mapping), "excluded: ",len(excluded_orth))
 
-if 'http://rdf.ebi.ac.uk/resource/ensembl/ENSG00000164256' in mapping: print('prdm9')
-
-if 'http://rdf.ebi.ac.uk/resource/ensembl/ENSG00000137812' in mapping: print('knl1') 
-
-quit()
 with open(excluded_orth_rel_file,'w') as excluded:
 	excluded.write(json.dumps(excluded_orth))
 

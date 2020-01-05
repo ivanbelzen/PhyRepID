@@ -3,11 +3,14 @@ import numpy as np
 root = '/home/ianthe/protein-repeat-evolution/'
 
 species_mapping_file = root+'ensembl_stable_id_species.json'
+species_tree_file = root+'ensembl_taxon_species_tree.phy'
+
 pfam_gacutoff_file = root+'ga_cutoff.tsv'
 pfam_clans_file = root+'Pfam-A.clans.tsv' 
+pfam_file=root+'/pfam/Pfam-A.hmm'
+
 taxon_uri =  'http://identifiers.org/taxonomy/'
-species_file = root+'ensembl_stable_id_species.json'
-species_tree_file = root+'ensembl_taxon_species_tree.phy'
+gene_uri_prefix = 'http://rdf.ebi.ac.uk/resource/ensembl/' 
 
 #Folder paths
 genetree_path = root+'genetrees_nhx/'
@@ -18,25 +21,26 @@ fasta_chopped_path=root+'fasta_ogs_chopped/'
 full_alignment_path = root+'full_alignment/'
 n_alignment_path = root+'n_alignment/'
 c_alignment_path = root+'c_alignment/'
+maptotree_path = root+'maptotree/'
 
 pfam_hmm_path=root+'pfam/hmm/'
 pfam_aligned_path=root+'pfam/aligned/'
 pfam_tblout_path=root+'pfam/tblout/'
+pfam_profiles_path=root+'pfam/profiles/'
 pfam_trees_path=root+'pfam/trees/'
 pfam_treefix_path = root+'pfam/treefix/'
 pfam_treefix_adjusted_path = root+'pfam/treefix/adjusted/'
 pfam_treefix_adjusted_images_path = root+'pfam/treefix/adjusted/images/'
-pfam_alignments_path=root+'pfam/alignments/'
+#pfam_alignments_path=root+'pfam/alignments/'
 progress_path=root+'progress_files/'
 
 meme_output_path = root+'denovo/meme/'
-#meme_output_path = root+'denovo/meme/'
 denovo_meme_repeats_path = root+'denovo/meme/repeats/'
-denovo_repeats_path = root+'denovo/repeats/'
+#denovo_repeats_path = root+'denovo/repeats/'
 denovo_tblout_path=root+'denovo/tblout/'
-denovo_hmm_path=root+'denovo/profiles/'
+denovo_profiles_path=root+'denovo/profiles/'
 denovo_aligned_path=root+'denovo/aligned/'
-denovo_final_alignments_path=root+'denovo/alignments/'
+#denovo_final_alignments_path=root+'denovo/alignments/'
 denovo_trees_path=root+'denovo/trees/'
 denovo_treefix_path = root+'denovo/treefix/'
 denovo_treefix_adjusted_path = root+'denovo/treefix/adjusted/'
@@ -49,9 +53,40 @@ genes_to_genetrees_file = root+'genes_to_genetrees.json'	#output of retrieve_gen
 ogs_to_hits_file = root+'hmm_results_final.json'			#output of iterative domain detection
 hmm_results_file = root+'hmm_results.json'
 
-pfam_file=root+'/pfam/Pfam-A.hmm'
+### Output files ###
 
-gene_uri_prefix = 'http://rdf.ebi.ac.uk/resource/ensembl/' 
+#Pipeline result files
+phyrepid_results_simple=root+'phyrepid_results_simple.tsv' 
+phyrepid_results_full=root+'phyrepid_results_full.tsv'
+phyrepid_results_human_full_lineage = root+'phyrepid_results_human_full_lineage.tsv'
+phyrepid_results_human_only = root+'phyrepid_results_human_only.tsv'
+
+#repeat stats
+pfam_repeat_stats_file = root+'pfam_repeat_stats.json'
+meme_repeat_stats_file = root+'meme_repeat_stats.json'
+pfam_repeat_stats_initial_file = root+'pfam_repeat_stats_initial.json'
+pfam_repeat_stats_initial_filtered_file = root+'pfam_repeat_stats_initial_filtered.json'
+		
+#evo events
+pfam_evo_events_file = root+'pfam_evo_events.json'
+meme_evo_events_file = root+'meme_evo_events.json'
+pfam_evo_gt_file = root+"pfam_evo_events_genetrees.json"
+meme_evo_gt_file = root+"meme_evo_events_genetrees.json"
+
+# Additional datasets - files not required 
+selectome_file = root+'resources/selectome.tsv' #needs human mapping 
+human_mapping_file = root+'og_human_mapping.json' #OG to human gene mapping from generate_human_protein_mapping.py
+exac_file = root+'resources/fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt' #needs gene symbol
+human_gene_symbol_file = root+'resources/human_gene_symbol.tsv'
+schaper_input_file_1 = root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_PFAM.newick.gz',
+schaper_input_file_2 = root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick.gz'
+schaper_comparison_file = root+'schaper_comparison.json' #output from analyse_schaper_comparison.py
+		
+
+### ###
+
+root_nodes = ['t117571','t7742', 't7711', 't33213']
+node_projection = { 't32525': ['t9347', 't1437010', 't314147'], 't8287': ['t32523'], 't186625':['t186626'], 't41665': ['t1489872'], 't117571':['t7742', 't7711', 't33213']}
 
 
 #Constants

@@ -7,8 +7,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import json
 import pipeline_methods as pre
 	
-root = '/home/ianthe/protein-repeat-evolution/'
-orthologs_output_file = root+'orthologs.json'
+orthologs_output_file = pre.orthologs_file
 
 reference_species = 9606 #human
 

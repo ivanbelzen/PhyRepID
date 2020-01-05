@@ -1,6 +1,6 @@
 ## IvB September 2018
 # Generate domain templates for easy visualisation in ITOL
-# using pfam summary.json and meme_summary.json
+# using repeat stats files
 
 import sys, os, glob, json
 import numpy as np
@@ -18,10 +18,10 @@ shape = 'RE'
 colour = '#00aedb'
 padding = 5
 
-with open(pre.root+"pfam_repeat_stats.json", 'r') as output: pfam_summary = json.load(output)
-with open(pre.root+"meme_repeat_stats.json", 'r') as output: meme_summary = json.load(output)
+with open(pre.pfam_repeat_stats_file, 'r') as output: pfam_summary = json.load(output)
+with open(pre.meme_repeat_stats_file, 'r') as output: meme_summary = json.load(output)
 	
-pfam_initial_filtered_output_file=pre.root+"pfam_repeat_stats_initial_filtered.json"
+pfam_initial_filtered_output_file=pre.pfam_repeat_stats_initial_filtered_file
 
 def generate_domain_string(orthologs_dict,label,colour='#0099ff'):
 	template_string = ''

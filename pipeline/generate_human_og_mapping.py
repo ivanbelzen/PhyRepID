@@ -14,12 +14,12 @@ import pipeline_methods as pre
 import numpy as np
 import seaborn as sns
 
-human_mapping_file = pre.root+'og_human_mapping.json'
+human_mapping_file = pre.human_mapping_file
 
 og_id_human_dict = {'pfam':{},'meme':{}}
 
-pfam_repeat_stats_file = pre.root+'pfam_repeat_stats.json'
-meme_repeat_stats_file = pre.root+'meme_repeat_stats.json'
+pfam_repeat_stats_file = pre.pfam_repeat_stats_file
+meme_repeat_stats_file = pre.meme_repeat_stats_file
 
 with open(pfam_repeat_stats_file, 'r') as pfam_output:
 	pfam_repeat_stats = json.load(pfam_output)

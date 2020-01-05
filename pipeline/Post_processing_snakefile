@@ -1,0 +1,125 @@
+'''
+PhyRepId pipeline
+
+Species defined in ensembl_stable_id_species.json
+Mapping and paths defined in pipeline methods
+
+Parse Treefix output from Pfam and Meme to infer duplications.
+Generate repeat stats from tblout for both Pfam and MEME after repeat detection/optimization.
+Generate PhyRepId output table, calculate PRD score and annotation if available ExAC, Selectome, Schaper, gene tree annotation.
+
+'''
+
+import pipeline_methods as pre
+
+rule all:
+	input: 
+		pre.pfam_repeat_stats_file,
+		pre.meme_repeat_stats_file,
+		pre.pfam_repeat_stats_initial_file,
+		pre.pfam_repeat_stats_initial_filtered_file,		
+		pre.pfam_evo_events_file,
+		pre.meme_evo_events_file,
+		pre.pfam_evo_gt_file,
+		pre.meme_evo_gt_file
+		pre.human_mapping_file,
+		pre.phyrepid_results_simple,
+		pre.phyrepid_results_full,
+		pre.phyrepid_results_human_full_lineage,
+		pre.phyrepid_results_human_only
+	
+rule parse_evo_events:
+	input:
+		pre.pfam_treefix_path+"{og_hit}.treefix.nhx.tree",
+		pre.denovo_treefix_path+"{og_hit}.treefix.nhx.tree"
+	output:
+		pre.pfam_treefix_adjusted_path+"{og_hit}.ete",
+		pre.denovo_treefix_adjusted_path+"{og_hit}.ete",
+		pre.pfam_evo_events_file,
+		pre.meme_evo_events_file,
+		pre.pfam_evo_gt_file,
+		pre.meme_evo_gt_file
+	shell: 
+		'python parse_evo_events.py'
+
+rule analyse_repeat_stats:
+	input:
+		pre.pfam_treefix_path+"{og_hit}.treefix.mpr.recon", 
+		pre.denovo_treefix_path+"{og_hit}.treefix.mpr.recon",
+		pre.pfam_tblout_path+"{og_hit}.tblout",
+		pre.denovo_tblout_path+"{og_hit}.tblout",
+		pre.pfam_hmm_path+"{og_hit}.tblout"
+	output:
+		pre.pfam_repeat_stats_file,
+		pre.meme_repeat_stats_file,
+		pre.pfam_repeat_stats_initial_file,
+		pre.pfam_repeat_stats_initial_filtered_file
+	shell: 
+		'python analyse_repeat_stats.py'
+		
+rule generate_human_og_mapping:
+	input:
+		pre.pfam_repeat_stats_file,
+		pre.meme_repeat_stats_file
+	output:
+		pre.human_mapping_file
+	shell: 
+		'python generate_human_og_mapping.py'
+
+	
+rule generate_phyrepid_results:
+	input:
+		pre.pfam_repeat_stats_file,
+		pre.meme_repeat_stats_file,
+		pre.pfam_evo_events_file,
+		pre.meme_evo_events_file,
+		pre.pfam_evo_gt_file,
+		pre.meme_evo_gt_file
+	output:
+		pre.phyrepid_results_simple,
+		pre.phyrepid_results_full
+	shell:
+		'python generate_phyrepid_results.py'
+		
+rule generate_phyrepid_results_human:
+	input:
+		pre.human_mapping_file,
+		pre.pfam_evo_events_file,
+		pre.meme_evo_events_file
+	output:
+		pre.phyrepid_results_human_full_lineage,
+		pre.phyrepid_results_human_only
+	shell:
+		'python generate_phyrepid_results_human.py'
+  
+
+rule analyse_schaper_comparison:
+	input:
+		pre.human_mapping_file,
+		pre.schaper_input_file_1,
+		pre.schaper_input_file_2
+	output:
+		pre.schaper_comparison_file
+	shell: 
+		'python analyse_schaper_comparison.py'
+
+	
+rule generate_phyrepid_results_full:
+	input:
+		pre.pfam_repeat_stats_file,
+		pre.meme_repeat_stats_file,
+		pre.pfam_evo_events_file,
+		pre.meme_evo_events_file,
+		pre.pfam_evo_gt_file,
+		pre.meme_evo_gt_file,
+		pre.schaper_comparison_file,
+		pre.selectome_file,
+		pre.human_mapping_file,
+		pre.exac_file,
+		pre.human_gene_symbol_file
+	output:
+		pre.phyrepid_results_simple,
+		pre.phyrepid_results_full
+	shell:
+		'python generate_phyrepid_results.py'
+		

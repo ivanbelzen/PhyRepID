@@ -19,20 +19,20 @@ import pipeline_methods as pre
 import numpy as np
 import gzip 
 
-schaper_files = [pre.root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_PFAM.newick.gz', pre.root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick.gz']
-human_mapping_file = pre.root+'og_human_mapping.json'
+schaper_files = [pre.schaper_input_file_1, pre.schaper_input_file_2]
+human_mapping_file = pre.human_mapping_file
 
 schaper_data = {} # human ortholog clan pfam_hit relationship
 
-schaper_summary_df_file = 'schaper_comparison.json' #used in phyrepid export
-schaper_detailed_df_file = "schaper_detailed_comparison.json"
-schaper_detailed_export = "phyrepid_schaper_comparison.tsv"
+schaper_summary_df_file = pre.schaper_comparison_file #used in phyrepid export
+schaper_detailed_df_file = pre.root+"schaper_detailed_comparison.json"
+schaper_detailed_export = pre.root+"phyrepid_schaper_comparison.tsv"
 
 ## Build Schaper data dictionary
 
 #Only compare to species in our pipeline
 species_selection_lst = []
-with open(pre.species_file,'r') as sp_mapping:
+with open(pre.species_mapping_file,'r') as sp_mapping:
 	species_dict = json.load(sp_mapping)
 	for item in species_dict:
 		species_selection_lst.append(item['ensembl_stable_id'])					

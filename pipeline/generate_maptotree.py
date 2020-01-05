@@ -28,13 +28,13 @@ identifier = sys.argv[1]
 
 img_path = pre.maptotree_path
 species_mapping = pre.get_species_mapping_full(pre.species_mapping_file)
-node_projection = { 't32525': ['t9347', 't1437010', 't314147'], 't8287': ['t32523'], 't186625':['t186626'], 't41665': ['t1489872'], 't117571':['t7742', 't7711', 't33213']}
-root_nodes = ['t117571','t7742', 't7711', 't33213'] #bony vertebrates and before
+root_nodes = pre.root_nodes 
+node_projection = pre.node_projection
 map_to_species_tree = {}
 
 # Load data
-pfam_results_file = pre.root+'pfam_evo_events.json'
-meme_results_file = pre.root+'meme_evo_events.json'
+pfam_results_file = pre.pfam_evo_events_file
+meme_results_file = pre.meme_evo_events_file
 
 with open(pfam_results_file, 'r') as results: pfam_results = json.load(results)
 with open(meme_results_file, 'r') as results: meme_results = json.load(results)

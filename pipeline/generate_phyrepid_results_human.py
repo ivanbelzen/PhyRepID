@@ -14,21 +14,21 @@ import numpy as np
 from scipy.stats.mstats import mode, gmean, hmean
 
 #Input files
-human_mapping_file = pre.root+'og_human_mapping.json'
-pfam_results_file = pre.root+'pfam_evo_events.json'
-meme_results_file = pre.root+'meme_evo_events.json'
+human_mapping_file = pre.human_mapping_file
+pfam_results_file = pre.pfam_evo_events_file
+meme_results_file = pre.meme_evo_events_file
 clans_dict = pre.get_pfam_clans(pre.pfam_clans_file)
 
 #Output
-output_full_lineage = pre.root+'phyrepid_results_human_full_lineage.tsv'
-output_human_only = pre.root+'phyrepid_results_human_only.tsv'
+output_full_lineage = pre.phyrepid_results_human_full_lineage
+output_human_only = pre.phyrepid_results_human_only
 
 
 ## Taxon id settings
 
 ## Mappings
-node_projection = { 't32525': ['t9347', 't1437010', 't314147'], 't8287': ['t32523'], 't186625':['t186626'], 't41665': ['t1489872'], 't117571':['t7742', 't7711', 't33213']}
-root_nodes = ['t117571','t7742', 't7711', 't33213'] #bony vertebrates and before
+root_nodes = pre.root_nodes 
+node_projection = pre.node_projection
 
 #Full lineage
 taxa_full_lineage = ['ENSP','t9606','t314146','t32525','t40674','t32524','t8287']
