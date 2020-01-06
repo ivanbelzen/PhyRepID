@@ -48,7 +48,7 @@ denovo_treefix_adjusted_images_path = root+'denovo/treefix/adjusted/images/'
 
 #Mapping files
 orthologs_file = root+'orthologs.json'
-ogs_file = root+'orthologs_filtered.json' 					#output of filter_orthologs.py
+orthologs_filtered_file = root+'orthologs_filtered.json' 					#output of filter_orthologs.py
 genes_to_genetrees_file = root+'genes_to_genetrees.json'	#output of retrieve_genetrees.py
 ogs_to_hits_file = root+'hmm_results_final.json'			#output of iterative domain detection
 hmm_results_file = root+'hmm_results.json'

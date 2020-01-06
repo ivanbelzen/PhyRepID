@@ -1,7 +1,8 @@
 ## IvB April 2018
 ## Query to get all orthologs between human and selected species
 ## Add all to dictionary 
-## TODO: implement automatic retry if sparql query fails
+# Output
+## pre.orthologs_file 	orthologs.json
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 import json
@@ -16,8 +17,8 @@ sparql.setReturnFormat(JSON)
 
 mapping = {} #for each gene, save species - ortholog combination, if multiple append to list.
 
-if pre.file_notempty(orthologs_output_file):
-	print("Orthologs already downloaded, delete orthologs.json to redo")
+if pre.file_notempty(pre.orthologs_file):
+	print("Orthologs already downloaded, delete ",pre.orthologs_file," to redo")
 	quit()
 
 
@@ -62,9 +63,7 @@ for sp in species_list:
 		if taxon not in mapping[gene_uri]: mapping[gene_uri][taxon] = []
 		mapping[gene_uri][taxon].append(ortholog_uri)
 			
-# for testing purposes; VALUES ?gene { ensembl:ENSG00000162692 ensembl:ENSG00000117399 } .
 
-#print(json.dumps(mapping))
-with open(orthologs_output_file, 'w') as output:
+with open(pre.orthologs_file, 'w') as output:
 	output.write(json.dumps(mapping))
 
