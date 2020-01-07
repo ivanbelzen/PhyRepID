@@ -126,6 +126,7 @@ else:
 with open(excluded_ogs_file,'w') as excl:
 	excl.write(json.dumps(excluded_ogs))
 if best_hit_repeats is None or len(best_hit_repeats) == 0: quit()	
+
 #store included 
 with open(included_ogs_file,'w') as incl:
 	incl.write(json.dumps(included_ogs))

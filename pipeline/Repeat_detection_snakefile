@@ -1,68 +1,33 @@
 '''
-Protein Repeat Evolution pipeline
+PhyRepId pipeline
 May 2018 
 
-Species defined in ensembl_stable_id_species.json
-Strings defined in pipeline methods
+First run Data collection Snakefile for dicts of selected orthologuous groups
+- genes_to_genetrees_file  - dict from retrieve_genetrees.py
+
+Mapping and paths defined in pipeline methods
 '''
+
 import pipeline_methods as pre
 
-#Paths to folders defined in pre
-
 #Determine output file list
-gene_id_list = []
 og_id_list = [] #genetree_gene
-og_hit_list = [] #genetree_gene_hit
-og_hit_list_adj = [] #genetree_gene of ones in og_hit list
 
-#mapping files defined in pre
-#ogs_file  					output of filter_orthologs.py
-with open(pre.ogs_file,'r') as ogs:
-	ogs_list = json.load(ogs)
-
-gene_id_list = [x[len(pre.gene_uri_prefix):] for x in ogs_list]
-
-#genes_to_genetrees_file 	output of retrieve_genetrees.py
 with open(pre.genes_to_genetrees_file,'r') as g2gt:
 	g2gt_mapping = json.load(g2gt)
 og_id_list = [y+"_"+x for x,y in g2gt_mapping.items()]
-
-#ogs_to_hits_file 			output of iterative domain detection
-with open(pre.ogs_to_hits_file,'r') as og2hit:
-	og_hit_mapping = json.load(og2hit)
-
-i=0
-#domains maps og_id to clan to best scoring hit in clan
-for og_id in og_hit_mapping:
-	for clan in og_hit_mapping[og_id]:
-		for hit, values in og_hit_mapping[og_id][clan].items():
-			#if i > 1: break
-			if sum(values['protein_uri'].values()) > 3:
-				og_hit_list.append(og_id+"_"+hit)
-				if og_id not in og_hit_list_adj: og_hit_list_adj.append(og_id)
-				i+=1
-			#else: print(og_id,hit)
-			
-subworkflow acquire_genetrees:
-	snakefile: "Snakefile_1"
-
-
+		
 rule all:
 	input: 
-		#expand(pre.ensembl_path+"{gene_id}.json", gene_id=gene_id_list),
-		#expand(pre.fasta_path+"{og_id}.fa", og_id=og_id_list),
-		#expand(pre.genetree_path+"{og_id}.nhx", og_id=og_id_list),
-		expand(pre.fasta_path+"{og_id}.fa", og_id=og_hit_list_adj),
-		expand(pre.genetree_path+"{og_id}.nhx", og_id=og_hit_list_adj),
-		#expand(pre.progress_path+"{og_id}.pfamhmm.done", og_id=og_id_list),
-		#expand(pre.pfam_trees_path+"{og_hit}.treefile", og_hit=og_hit_list),
-		#expand(pre.pfam_treefix_path+"{og_hit}.treefix.tree", og_hit=og_hit_list),
-		#expand(pre.pfam_treefix_path+"{og_hit}.treefix.mpr.recon", og_hit=og_hit_list)
-		#pre.pfam_treefix_path+'ENSGT00390000015433_ENSG00000082068_WD40.treefix.mpr.recon'
+		expand(pre.fasta_path+"{og_id}.fa", og_id=og_id_list),
+		expand(pre.genetree_path+"{og_id}.nhx", og_id=og_id_list),
+		expand(pre.fasta_path+"{og_id}.fa", og_id=og_id_list),
+		expand(pre.genetree_path+"{og_id}.nhx", og_id=og_id_list),
+		expand(pre.progress_path+"{og_id}.pfamhmm.done", og_id=og_id_list)
 		
 rule parse_genetrees:
 	input:
-		#ancient(acquire_genetrees(pre.genes_to_genetrees_file)),
+		pre.genes_to_genetrees_file,
 		pre.ensembl_path+"{gene_id}.json"
 	output:
 		pre.fasta_path+"{genetree}_{gene_id}.fa",
@@ -75,7 +40,7 @@ rule hmmpress:
 	output: pre.pfam_file+'.h3i'
 	shell: 'hmmpress '+pre.pfam_file
 
-rule hmmscan:
+rule pfam_hmmscan:
 	input: 
 		pre.fasta_path+"{og_id}.fa"
 	output:
@@ -92,59 +57,3 @@ rule repeat_detection_iteration:
 	shell: 
 		'bash run_pfam_iteration_single.bash {input}' 
 
-rule run_iqtree:
-	input: 
-		pre.pfam_aligned_path+"{og_hit}.linsi.fa"
-	output:
-		pre.pfam_aligned_path+"{og_hit}.linsi.fa.treefile"
-	shell:
-		'iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT -redo '
-		
-		
-rule mv_iqtree:
-	input: 
-		pre.pfam_aligned_path+"{og_hit}.linsi.fa.treefile"
-	output:
-		pre.pfam_trees_path+"{og_hit}.treefile"
-	shell:
-		'cp {input} {output}'
-		
-rule prepare_treefix:
-	input:
-		treefile = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile", genetree = pre.genetree_path+"{og}.nhx"
-	output:
-		pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile.rooted"#, 
-		#pre.pfam_treefix_path+"{og}.stree", pre.pfam_treefix_path+"{og}.smap"
-	shell:
-		'python generate_treefix_input.py {input.treefile} {input.genetree}'
-
-rule run_treefix:
-	input: 
-		treefile = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile.rooted", 
-		iqtree = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.iqtree",  smap = pre.pfam_treefix_path+"{og}.smap", stree = pre.pfam_treefix_path+"{og}.stree"
-	output:
-		pre.pfam_aligned_path+"{og}_{hit}.treefix.tree"
-	shell:
-		#| grep -oP "Best-fit model according to BIC: \K.*"
-		'model=`cat {input.iqtree} | grep -oP "Best-fit model according to BIC: \K.*"`; 
-		treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o .linsi.fa.treefile.rooted -n .treefix.tree -V 0 -m treefix.models.iqtreemodel.CoarseModel 
-		-e \'-t AA -m  \'$model\'\' {input.treefile}'
-
-rule mv_treefix:
-	input: 
-		pre.pfam_aligned_path+"{og_hit}.treefix.tree"
-	output:
-		pre.pfam_treefix_path+"{og_hit}.treefix.tree"
-	shell:
-		'mv {input} {output}'
-
-			
-rule run_treefix_annotate:
-	input: 
-		tree = pre.pfam_treefix_path+"{og}_{hit}.treefix.tree", smap = pre.pfam_treefix_path+"{og}.smap", stree = pre.pfam_treefix_path+"{og}.stree"
-	output:
-		pre.pfam_treefix_path+"{og}_{hit}.treefix.mpr.recon"
-	shell:
-		'tree-annotate -s {input.stree} -S {input.smap} {input.tree}'
-				
-	

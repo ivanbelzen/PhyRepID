@@ -1,13 +1,29 @@
 '''
 PhyRepId pipeline
+January 2020
+
+Post-processing evo events, last Snakefile after repeat detection Pfam and MEME is complete.
+- Parse Treefix output from Pfam and MEME to infer duplications.
+- Generate repeat stats from tblout for both Pfam and MEME after repeat detection/optimization.
+- Generate PhyRepId output table, calculate PRD score and annotation if available ExAC, Selectome, Schaper, gene tree annotation.
 
 Species defined in ensembl_stable_id_species.json
 Mapping and paths defined in pipeline methods
 
-Parse Treefix output from Pfam and Meme to infer duplications.
-Generate repeat stats from tblout for both Pfam and MEME after repeat detection/optimization.
-Generate PhyRepId output table, calculate PRD score and annotation if available ExAC, Selectome, Schaper, gene tree annotation.
+Not in Snakemake because GLOB'ed
+rule parse_evo_events  
+input:
+	pre.pfam_treefix_path+"{og_hit}.treefix.nhx.tree",
+	pre.denovo_treefix_path+"{og_hit}.treefix.nhx.tree"
+output:
+	pre.pfam_treefix_adjusted_path+"{og_hit}.ete",
+	pre.denovo_treefix_adjusted_path+"{og_hit}.ete",
 
+rule analyse_repeat_stats:
+input:
+	pre.pfam_tblout_path+"{og_hit}.tblout",
+	pre.denovo_tblout_path+"{og_hit}.tblout",
+	pre.pfam_hmm_path+"{og_hit}.tblout"		
 '''
 
 import pipeline_methods as pre
@@ -29,12 +45,7 @@ rule all:
 		pre.phyrepid_results_human_only
 	
 rule parse_evo_events:
-	input:
-		pre.pfam_treefix_path+"{og_hit}.treefix.nhx.tree",
-		pre.denovo_treefix_path+"{og_hit}.treefix.nhx.tree"
 	output:
-		pre.pfam_treefix_adjusted_path+"{og_hit}.ete",
-		pre.denovo_treefix_adjusted_path+"{og_hit}.ete",
 		pre.pfam_evo_events_file,
 		pre.meme_evo_events_file,
 		pre.pfam_evo_gt_file,
@@ -43,12 +54,6 @@ rule parse_evo_events:
 		'python parse_evo_events.py'
 
 rule analyse_repeat_stats:
-	input:
-		pre.pfam_treefix_path+"{og_hit}.treefix.mpr.recon", 
-		pre.denovo_treefix_path+"{og_hit}.treefix.mpr.recon",
-		pre.pfam_tblout_path+"{og_hit}.tblout",
-		pre.denovo_tblout_path+"{og_hit}.tblout",
-		pre.pfam_hmm_path+"{og_hit}.tblout"
 	output:
 		pre.pfam_repeat_stats_file,
 		pre.meme_repeat_stats_file,

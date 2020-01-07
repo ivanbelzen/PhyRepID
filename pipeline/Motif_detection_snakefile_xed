@@ -1,26 +1,34 @@
 '''
-Protein Repeat Evolution pipeline
+PhyRepId pipeline
 August 2018 
 
-Species defined in ensembl_stable_id_species.json
-Strings defined in pipeline methods
+Mapping and paths defined in pipeline methods
 
-Fork of normal Snakefile
-Denovo repeat detection instead of pfam domain detection.
-Run MEME on disjunct set of fasta_ogs/hmm results and OGs  that have pfam repeat trees
+After Pfam domain detection, fork of normal Snakefile
+Run MEME on all OGs that do not have pfam domain repeats
+
+Note, progressive filtering so script requires staged running 
+TODO: find another solution for this.
 '''
 import pipeline_methods as pre
 import glob
 
-#meme_dataset_file = pre.root+'meme_dataset.json'
-meme_dataset_file = pre.root+'meme_todo.json'
+# Determine lists of OG ids and OG-hit ids to run pipeline on
+# All OGs minus those with Pfam repeats
 
-#Determine output file list
-input_ogs = []
-meme_ogs = [] 
+og_id_list = [] #genetree_gene
+with open(pre.genes_to_genetrees_file,'r') as g2gt:
+	g2gt_mapping = json.load(g2gt)
+og_id_list = [y+"_"+x for x,y in g2gt_mapping.items()]
 
-with open(meme_dataset_file,'r') as og_ids:
-	input_ogs = json.load(og_ids)
+pfam_ogs = [x[len(pre.pfam_aligned_path):-len('.linsi.fa')] for x in glob.glob(pre.pfam_aligned_path+"*.linsi.fa")]
+
+meme_input_set = [og_id for og_id in og_id_list if og_id not in pfam_ogs ]	
+print('Run meme on OGs that do NOT have a Pfam repeat: ',len(meme_input_set), ' (',len(pfam_ogs), 'Pfam OGs)')
+
+
+#Progressively smaller sets to run on
+## TODO: resolve this
 
 meme_ogs = [x[len(pre.fasta_chopped_path):-len('.fa')] for x in glob.glob(pre.fasta_chopped_path+"*.fa")]
 print(len(meme_ogs))
@@ -29,28 +37,26 @@ meme_ogs_parsed = [x[len(pre.denovo_meme_repeats_path):-len('.fa')] for x in glo
 print(len(meme_ogs_parsed))
 
 meme_ogs_filtered = [x[len(pre.denovo_repeats_path):-len('.fa')] for x in glob.glob(pre.denovo_repeats_path+"*.fa")]
-print(len(meme_ogs_filtered)) #includes the ones already done but those get skipped bc of progress file
+print(len(meme_ogs_filtered)) 
 
-#manually?
-#subworkflow chop_sequences:
-#	snakefile: "Snakefork_chop"
 	
 rule all:
 	input:
-		#expand(pre.progress_path+"{og_id}.chopped_fasta.done", og_id=input_ogs),
-		#expand(pre.meme_output_path+"{og_id}/meme.html", og_id=meme_ogs),
-		#
+		expand(pre.progress_path+"{og_id}.chopped_fasta.done", og_id=meme_input_set),
+		expand(pre.meme_output_path+"{og_id}/meme.html", og_id=meme_ogs),
 		expand(pre.progress_path+"{og_id}.meme_parse_chop.done", og_id=meme_ogs),
 		expand(pre.progress_path+"{og_id}.meme_filter_chop.done", og_id=meme_ogs_parsed),
-		
-		expand(pre.progress_path+"{og_id}.meme_hmm.done", og_id=meme_ogs_filtered),
-		expand(pre.denovo_trees_path+"{og_id}.treefile", og_id=meme_ogs_filtered),
-		
-		expand(pre.genetree_path+"{og_id}.nhx", og_id=meme_ogs_filtered),
-		expand(pre.denovo_treefix_path+"{og_id}.treefix.mpr.recon", og_id=meme_ogs_filtered)
-
-		
-rule run_meme:
+		expand(pre.progress_path+"{og_id}.meme_hmm.done", og_id=meme_ogs_filtered)
+			
+rule mask_sequences:
+	input:
+		hmm = pre.pfam_hmm_path+"{og_id}.tblout", fasta = pre.fasta_path+"{og_id}.fa"
+	output:
+		pre.progress_path+"{og_id}.chopped_fasta.done"
+	shell:
+		'python parse_tblout_denovo_chop.py {input.hmm} {input.fasta}; touch {output}' 
+	
+rule run_meme_detection:
 	input:
 		pre.fasta_chopped_path+"{og_id}.fa"
 	output:
@@ -86,64 +92,3 @@ rule repeat_detection_iteration:
 		pre.progress_path+"{og_id}.meme_hmm.done"
 	shell: 
 		'bash run_meme_iteration.bash {input}' 	
-
-
-rule run_iqtree:
-	input: 
-		pre.denovo_aligned_path+"{og_id}.linsi.fa"
-	output:
-		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", pre.denovo_aligned_path+"{og_id}.linsi.fa.iqtree"
-	shell:
-		'iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT -redo'
-		
-rule mv_iqtree:
-	input: 
-		pre.denovo_aligned_path+"{og_hit}.linsi.fa.treefile"
-	output:
-		pre.denovo_trees_path+"{og_hit}.treefile"
-	shell:
-		'cp {input} {output}'
-
-
-rule reparse_genetrees:
-    input:
-        pre.ensembl_path+"{gene_id}.json"
-    output:
-        pre.fasta_path+"{genetree}_{gene_id}.fa",
-        pre.genetree_path+"{genetree}_{gene_id}.nhx"
-    shell:
-        'python parse_genetree.py {input}'		
-				
-rule prepare_treefix:
-	input:
-		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", genetree = pre.genetree_path+"{og_id}.nhx"
-	output:
-		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", 
-		pre.denovo_treefix_path+"{og_id}.stree", pre.denovo_treefix_path+"{og_id}.smap"
-	shell:
-		'python generate_treefix_input.py {input.treefile} {input.genetree}'
-
-rule run_treefix:
-	input: 
-		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", iqtree = pre.denovo_aligned_path+"{og_id}.linsi.fa.iqtree",  smap = pre.denovo_treefix_path+"{og_id}.smap", stree = pre.denovo_treefix_path+"{og_id}.stree"
-	output:
-		pre.denovo_aligned_path+"{og_id}.treefix.tree"
-	shell:
-		#| grep -oP "Best-fit model according to BIC: \K.*"
-		'model=`cat {input.iqtree} | grep -oP "Best-fit model according to BIC: \K.*"`; treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o .linsi.fa.treefile.rooted -n .treefix.tree -V 0 -m treefix.models.iqtreemodel.CoarseModel -e \'-t AA -m  \'$model\'\' {input.treefile}'
-
-rule mv_treefix:
-	input: 
-		pre.denovo_aligned_path+"{og_id}.treefix.tree"
-	output:
-		pre.denovo_treefix_path+"{og_id}.treefix.tree"
-	shell:
-		'mv {input} {output}'
-			
-rule run_treefix_annotate:
-	input: 
-		tree = pre.denovo_treefix_path+"{og_id}.treefix.tree", smap = pre.denovo_treefix_path+"{og_id}.smap", stree = pre.denovo_treefix_path+"{og_id}.stree"
-	output:
-		pre.denovo_treefix_path+"{og_id}.treefix.mpr.recon"
-	shell:
-		'tree-annotate -s {input.stree} -S {input.smap} {input.tree}'

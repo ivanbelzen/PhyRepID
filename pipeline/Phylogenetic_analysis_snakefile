@@ -1,0 +1,141 @@
+'''
+PhyRepId pipeline
+May 2018 
+
+After repeat detection and motif detection 
+Phylogenetic analysis for Pfam and Meme datasets 
+Starting point: aligned reads from repeat detection+refinement (.linsi.fa) and 
+use gene trees retrieved during data collection (.nhx)
+
+Mapping and paths defined in pipeline methods
+
+Not all outputs are in snakemake
+'''
+
+import pipeline_methods as pre
+import glob
+
+
+# Determine lists of OG ids and OG-hit ids to run pipeline on
+# Easiest way is to glob .linsi.fa files 
+
+pfam_ogs = [x[len(pre.pfam_aligned_path):-len('.linsi.fa')] for x in glob.glob(pre.pfam_aligned_path+"*.linsi.fa")]
+print(len(pfam_ogs))
+meme_ogs = [x[len(pre.denovo_aligned_path):-len('.linsi.fa')] for x in glob.glob(pre.denovo_aligned_path+"*.linsi.fa")]
+print(len(meme_ogs))
+		
+rule all:
+	input: 
+		expand(pre.pfam_aligned_path+"{og_hit}.linsi.fa.treefile", og_hit=pfam_ogs),
+		expand(pre.pfam_aligned_path+"{og_hit}.linsi.fa.treefile.rooted", og_hit=pfam_ogs),
+		expand(pre.pfam_aligned_path+"{og_hit}.treefix.tree", og_hit=pfam_ogs),
+		expand(pre.pfam_trees_path+"{og_hit}.treefile", og_hit=pfam_ogs),
+		expand(pre.pfam_treefix_path+"{og_hit}.treefix.tree", og_hit=pfam_ogs),
+		expand(pre.pfam_treefix_path+"{og_hit}.treefix.nhx.tree", og_hit=pfam_ogs),
+		expand(pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", og_id=meme_ogs),
+		expand(pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", og_id=meme_ogs),
+		expand(pre.denovo_aligned_path+"{og_id}.treefix.tree", og_id=meme_ogs),
+		expand(pre.denovo_trees_path+"{og_id}.treefile", og_id=meme_ogs),
+		expand(pre.denovo_treefix_path+"{og_id}.treefix.tree", og_id=meme_ogs),
+		expand(pre.denovo_treefix_path+"{og_id}.treefix.nhx.tree", og_id=meme_ogs)
+		
+#Pfam dataset
+rule pfam_run_iqtree:
+	input: 
+		pre.pfam_aligned_path+"{og_hit}.linsi.fa"
+	output:
+		pre.pfam_aligned_path+"{og_hit}.linsi.fa.treefile"
+	shell:
+		'iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT -redo '
+		
+rule pfam_mv_iqtree:
+	input: 
+		pre.pfam_aligned_path+"{og_hit}.linsi.fa.treefile"
+	output:
+		pre.pfam_trees_path+"{og_hit}.treefile"
+	shell:
+		'cp {input} {output}'
+		
+rule pfam_prepare_treefix:
+	input:
+		treefile = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile", genetree = pre.genetree_path+"{og}.nhx"
+	output:
+		pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile.rooted"
+	shell:
+		'python generate_treefix_input.py {input.treefile} {input.genetree}'
+
+rule pfam_run_treefix:
+	input: 
+		treefile = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile.rooted", 
+		iqtree = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.iqtree",  smap = pre.pfam_treefix_path+"{og}.smap", stree = pre.pfam_treefix_path+"{og}.stree"
+	output:
+		pre.pfam_aligned_path+"{og}_{hit}.treefix.tree"
+	shell:
+		'model=`cat {input.iqtree} | grep -oP "Best-fit model according to BIC: \K.*"`; treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o .linsi.fa.treefile.rooted -n .treefix.tree -V 0 -m treefix.models.iqtreemodel.CoarseModel -e \'-t AA -m  \'$model\'\' {input.treefile}'
+
+rule pfam_mv_treefix:
+	input: 
+		pre.pfam_aligned_path+"{og_hit}.treefix.tree"
+	output:
+		pre.pfam_treefix_path+"{og_hit}.treefix.tree"
+	shell:
+		'mv {input} {output}'
+			
+rule pfam_run_treefix_annotate:
+	input: 
+		tree = pre.pfam_treefix_path+"{og}_{hit}.treefix.tree", smap = pre.pfam_treefix_path+"{og}.smap", stree = pre.pfam_treefix_path+"{og}.stree"
+	output:
+		pre.pfam_treefix_path+"{og}_{hit}.treefix.nhx.tree"
+	shell:
+		'tree-annotate -s {input.stree} -S {input.smap} {input.tree}'
+
+#MEME dataset
+
+rule meme_run_iqtree:
+	input: 
+		pre.denovo_aligned_path+"{og_id}.linsi.fa"
+	output:
+		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile"
+	shell:
+		'iqtree-omp -s {input} -bb 1000 -nt AUTO -mset LG,WAG,VT,Dayhoff,JTT -redo'
+		
+rule meme_mv_iqtree:
+	input: 
+		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile"
+	output:
+		pre.denovo_trees_path+"{og_id}.treefile"
+	shell:
+		'cp {input} {output}'
+				
+rule meme_prepare_treefix:
+	input:
+		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", genetree = pre.genetree_path+"{og_id}.nhx"
+	output:
+		pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", 
+		pre.denovo_treefix_path+"{og_id}.stree", pre.denovo_treefix_path+"{og_id}.smap"
+	shell:
+		'python generate_treefix_input.py {input.treefile} {input.genetree}'
+
+rule meme_run_treefix:
+	input: 
+		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile.rooted", iqtree = pre.denovo_aligned_path+"{og_id}.linsi.fa.iqtree",  smap = pre.denovo_treefix_path+"{og_id}.smap", stree = pre.denovo_treefix_path+"{og_id}.stree"
+	output:
+		pre.denovo_aligned_path+"{og_id}.treefix.tree"
+	shell:
+		'model=`cat {input.iqtree} | grep -oP "Best-fit model according to BIC: \K.*"`; treefix -s {input.stree} -S {input.smap} -A .linsi.fa -o .linsi.fa.treefile.rooted -n .treefix.tree -V 0 -m treefix.models.iqtreemodel.CoarseModel -e \'-t AA -m  \'$model\'\' {input.treefile}'
+
+rule meme_mv_treefix:
+	input: 
+		pre.denovo_aligned_path+"{og_id}.treefix.tree"
+	output:
+		pre.denovo_treefix_path+"{og_id}.treefix.tree"
+	shell:
+		'mv {input} {output}'
+			
+rule meme_run_treefix_annotate:
+	input: 
+		tree = pre.denovo_treefix_path+"{og_id}.treefix.tree", smap = pre.denovo_treefix_path+"{og_id}.smap", stree = pre.denovo_treefix_path+"{og_id}.stree"
+	output:
+		pre.denovo_treefix_path+"{og_id}.treefix.nhx.tree"
+	shell:
+		'tree-annotate -s {input.stree} -S {input.smap} {input.tree}'

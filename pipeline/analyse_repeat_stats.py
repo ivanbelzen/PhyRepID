@@ -1,7 +1,7 @@
 ## IvB August 2018
 # Last edit: 30 december 2019
 ## Generate repeat stats from tblout for both Pfam and Meme
-# Parse only finished OGs that have Treefix annotate output files: glob treefix path *.treefix.mpr.recon  
+# Parse only finished OGs that have Treefix annotate output files: glob treefix path *.treefix.nhx.tree  
 # output:  pfam_repeat_stats.json,  meme_repeat_stats.json
 # output optional: pfam_repeat_stats_initial.json pfam_repeat_stats_initial_filtered.json
 # output optional (false default): report OGs that have repeats in less than 4 proteins 
@@ -31,11 +31,11 @@ meme_exclude_ogs_file=pre.root+"exclude_ogs_lt4_meme.lst"
 
 ## Generate PFAM summary
 pfam_summary = {}
-pfam_file_list = glob.glob(pre.pfam_treefix_path + '*.treefix.mpr.recon' ) 
+pfam_file_list = glob.glob(pre.pfam_treefix_path + '*.treefix.nhx.tree' ) 
 
 excluded_ogs = []
 for pfam_file in pfam_file_list:	
-	og_hit_id = pfam_file[len(pre.pfam_treefix_path):-len('.treefix.mpr.recon')]
+	og_hit_id = pfam_file[len(pre.pfam_treefix_path):-len('.treefix.nhx.tree')]
 	pfam_tblout = pre.pfam_tblout_path+og_hit_id+'.tblout'
 	if not pre.file_notempty(pfam_tblout):continue
 	repeats = pre.parse_domtblout_stats(pfam_tblout)
@@ -89,11 +89,11 @@ if flag_generate_initial:
 
 ## Generate MEME summary
 meme_summary = {}
-meme_file_list = glob.glob(pre.denovo_treefix_path + '*.treefix.mpr.recon' ) 
+meme_file_list = glob.glob(pre.denovo_treefix_path + '*.treefix.nhx.tree' ) 
 
 excluded_ogs = []		
 for meme_repeats in meme_file_list:	
-	og_id = meme_repeats[len(pre.denovo_treefix_path):-len('.treefix.mpr.recon')]
+	og_id = meme_repeats[len(pre.denovo_treefix_path):-len('.treefix.nhx.tree')]
 	meme_tblout = pre.denovo_tblout_path+og_id+'.tblout'
 	
 	repeats = pre.parse_domtblout_stats(meme_tblout)

@@ -1,6 +1,13 @@
 ## IvB 
-## Parse meme output
-# ENV +-5 
+## August 2018
+# Parse meme output and derive repeated motifs
+# Log in meme_log_chop.json
+
+## Input
+# MEME html file in pre.meme_output_path
+## Output
+# Fasta file of hits in pre.denovo_meme_repeats_path
+	
 import sys, os
 import csv
 import operator
