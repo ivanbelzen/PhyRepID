@@ -2,11 +2,10 @@
 PhyRepId pipeline
 August 2018 
 
-Mapping and paths defined in pipeline methods
-
 After Pfam domain detection, fork of normal Snakefile
 Run MEME on all OGs that do not have pfam domain repeats
 
+Mapping and paths defined in pipeline methods
 Note, progressive filtering so script requires staged running 
 TODO: find another solution for this.
 '''
