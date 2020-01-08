@@ -19,14 +19,13 @@ fasta_path = root+'fasta_ogs/'
 fasta_masked_path=root+'fasta_ogs_masked/'
 fasta_chopped_path=root+'fasta_ogs_chopped/'
 full_alignment_path = root+'full_alignment/'
-n_alignment_path = root+'n_alignment/'
-c_alignment_path = root+'c_alignment/'
 maptotree_path = root+'maptotree/'
 
 pfam_hmm_path=root+'pfam/hmm/'
 pfam_aligned_path=root+'pfam/aligned/'
 pfam_tblout_path=root+'pfam/tblout/'
 pfam_profiles_path=root+'pfam/profiles/'
+pfam_repeats_path = root+'pfam/repeats/'
 pfam_trees_path=root+'pfam/trees/'
 pfam_treefix_path = root+'pfam/treefix/'
 pfam_treefix_adjusted_path = root+'pfam/treefix/adjusted/'
@@ -36,7 +35,7 @@ progress_path=root+'progress_files/'
 
 meme_output_path = root+'denovo/meme/'
 denovo_meme_repeats_path = root+'denovo/meme/repeats/'
-#denovo_repeats_path = root+'denovo/repeats/'
+denovo_repeats_path = root+'denovo/repeats/'
 denovo_tblout_path=root+'denovo/tblout/'
 denovo_profiles_path=root+'denovo/profiles/'
 denovo_aligned_path=root+'denovo/aligned/'
@@ -47,11 +46,24 @@ denovo_treefix_adjusted_path = root+'denovo/treefix/adjusted/'
 denovo_treefix_adjusted_images_path = root+'denovo/treefix/adjusted/images/'
 
 #Mapping files
+log_parse_genetree_file = root+'log_parse_genetree.txt' 
 orthologs_file = root+'orthologs.json'
 orthologs_filtered_file = root+'orthologs_filtered.json' 					#output of filter_orthologs.py
 genes_to_genetrees_file = root+'genes_to_genetrees.json'	#output of retrieve_genetrees.py
-ogs_to_hits_file = root+'hmm_results_final.json'			#output of iterative domain detection
 hmm_results_file = root+'hmm_results.json'
+hmm_results_final_file = root+'hmm_results_final.json'
+meme_hmm_results_file = root+'meme_hmm_results.json'
+meme_hmm_results_final_file = root+'meme_results_final.json'
+					
+excluded_orth_rel_file = root + 'excluded_orth_rel.json'
+excluded_pairs_file = root + 'excluded_pairs.json'
+meme_results_parse_log_file = root+'meme_results_parse_log.json'
+pfam_rearranged_nodes_log_file = root+'log_pfam_rearranged_nodes.json'
+meme_rearranged_nodes_log_file = root+'log_meme_rearranged_nodes.json'
+
+meme_excluded_ogs_file = root+'meme_excluded_ogs.json'
+pfam_excluded_repeats_file = root+'pfam_excluded_repeats.json'
+
 
 ### Output files ###
 

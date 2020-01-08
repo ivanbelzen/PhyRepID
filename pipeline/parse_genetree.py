@@ -8,12 +8,11 @@
 import requests, sys, json, os.path
 import pipeline_methods as pre
 
-root = '/home/ianthe/protein-repeat-evolution/'
-ensembl_path = root+'ensembl_api/'     
-genetree_path = root+'genetrees_nhx/'
-fasta_path = root+'fasta_ogs/'
-filtered_ogs_file = root+'orthologs_filtered.json'
-log_file = 'log_parse_genetree.txt' #append to log
+ensembl_path = pre.ensembl_path
+genetree_path = pre.genetree_path
+fasta_path = pre.fasta_path
+filtered_ogs_file = pre.orthologs_filtered_file
+log_file = pre.log_parse_genetree_file
 
 gene_uri_prefix = 'http://rdf.ebi.ac.uk/resource/ensembl/' 
 gene_id = '' #human gene id
@@ -56,11 +55,6 @@ if genetree_json is None:
 	
 nhx_tree = pre.make_valid_nhx(pre.get_nhxtree(genetree_json))
 
-
-#bugtracking internal node names
-#print(nhx_tree)
-#quit()
-	
 if nhx_tree is None:
 	with open(log_file, mode='ab') as log:
 		log.write("No NHX tree: "+og_id+'\n')
@@ -69,9 +63,6 @@ if nhx_tree is None:
 with open(nhx_file_path,'w') as genetree_file:
 	genetree_file.write(nhx_tree)
 
-#bugtracking internal node names
-#quit()
-	
 
 with open(fasta_file_path, 'w') as output_fa:	 #fasta file with all sequences
 	output_fa.write(pre.get_proteinseq(genetree_json))

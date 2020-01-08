@@ -1,16 +1,12 @@
 ## IvB March 2018
 # Parses HMMscan domain table output
-# Use gathing cutoff for sequences
-# Select best Pfam model for each clan
-# Based on sequence bitscore maximalisation
 # Filter OGs based on minimum #repeats in #species
 # Prepare set of repeats for iterative domain annotation
 # Writes a fasta file for each clan with all of the hits 
 
 # Input: HMMscan domain tblout, fasta file for OGs
-# Needs: Pfam gathering cutoff, pfam clans, 
 # Outputs: Fasta file with repeats for each OG-hit combination 
-# Logs: HMM_results.json for statistics, dict of repeat proteins because of species threshold.
+# Logs: meme_hmm_results.json for statistics, dict of repeat proteins because of species threshold.
 
 # ENV +-5 
 import sys, os
@@ -20,22 +16,18 @@ import re
 import json
 import pipeline_methods as pre
 
-root = '/home/ianthe/protein-repeat-evolution/'
-hmmr_tbl_input_path = root+'denovo/tblout/'
-fasta_output_path = root+'denovo/repeats/'
+hmmr_tbl_input_path = pre.denovo_tblout_path
+fasta_output_path = pre.denovo_repeats_path
 input_ext = '.tblout'
 output_ext = '.fa' 
 outfile_path = "" #defined based on hmm input path, fasta output path and extension
 
-root_old = '/home/ianthe/pipeline/'
-species_mapping_file = root+'ensembl_stable_id_species.json'
+species_mapping_file = pre.species_mapping_file
 species_mapping = {}
-results_file = root+'meme_hmm_results.json'
+results_file = pre.meme_hmm_results_file
 results_dict = {}
-excluded_ogs_file = root+'meme_excluded_ogs.json'
+excluded_ogs_file = pre.meme_excluded_ogs_file
 excluded_ogs={}
-included_ogs_file = root+'meme_included_ogs.json'
-included_ogs={}
 
 repeat_threshold = 3 # >=
 species_threshold = 1 # >=
@@ -74,14 +66,6 @@ else:
 	excluded_ogs['settings']={'repeat_threshold':repeat_threshold, 'species_threshold':species_threshold }
 	excluded_ogs['og_id'] = []		
 
-#init included file
-if pre.file_notempty(included_ogs_file):
-	with open(included_ogs_file,'r') as log:
-		included_ogs = json.load(log)
-else: 
-	included_ogs['settings']={'repeat_threshold':repeat_threshold, 'species_threshold':species_threshold }
-	included_ogs['og_id'] = []		
-
 
 #read clans
 pfam_clans = {}
@@ -119,17 +103,10 @@ with open(results_file,'w') as log:
 best_hit_repeats = pre.get_best_hit(repeats)
 if best_hit_repeats is None or len(best_hit_repeats) == 0: 
 	excluded_ogs['og_id'].append(gene_name)
-else: 
-	included_ogs['og_id'].append(gene_name)
 	
 #store excluded 
 with open(excluded_ogs_file,'w') as excl:
 	excl.write(json.dumps(excluded_ogs))
 if best_hit_repeats is None or len(best_hit_repeats) == 0: quit()	
-
-#store included 
-with open(included_ogs_file,'w') as incl:
-	incl.write(json.dumps(included_ogs))
-
 
 pre.write_fasta_file(outfile_path, best_hit_repeats, fasta, padding)

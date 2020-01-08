@@ -29,11 +29,9 @@ rule filter_orthologs:
 	input:
 		pre.orthologs_file
 	output:
-		pre.orthologs_filtered_file,
-		'excluded_orth_rel.json',
-		'excluded_pairs.json'
+		pre.orthologs_filtered_file
 	shell:
-		'python filter_orthologs.py'
+		'python retrieve_orthologs_filter.py'
 
 rule retrieve_genetrees:
 	input:

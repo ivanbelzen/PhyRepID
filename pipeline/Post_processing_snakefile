@@ -2,7 +2,7 @@
 PhyRepId pipeline
 January 2020
 
-Post-processing evo events, last Snakefile after repeat detection Pfam and MEME is complete.
+Post-processing evo events, last Snakefile after repeat detection and phylogenetic analysis are complete.
 - Parse Treefix output from Pfam and MEME to infer duplications.
 - Generate repeat stats from tblout for both Pfam and MEME after repeat detection/optimization.
 - Generate PhyRepId output table, calculate PRD score and annotation if available ExAC, Selectome, Schaper, gene tree annotation.

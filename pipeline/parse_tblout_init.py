@@ -10,7 +10,7 @@
 # Input: HMMscan domain tblout, fasta file for OGs
 # Needs: Pfam gathering cutoff, pfam clans, 
 # Outputs: Fasta file with repeats for each OG-hit combination 
-# Logs: HMM_results.json for statistics, dict of repeat proteins because of species threshold.
+# Logs: hmm_results.json for statistics, dict of repeat proteins because of species threshold.
 
 # ENV +-5 
 import sys, os
@@ -20,23 +20,21 @@ import re
 import json
 import pipeline_methods as pre
 
-root = '/home/ianthe/protein-repeat-evolution/'
-hmmr_tbl_input_path = root+'pfam/hmm/'
-fasta_output_path = root+'pfam/repeats/'
+hmmr_tbl_input_path = pre.pfam_hmm_path
+fasta_output_path = pre.pfam_repeats_path
 input_ext = '.tblout'
 output_ext = '_hit.fa' #hit replaced later by best pfam model of clan
 outfile_path = "" #defined based on hmm input path, fasta output path and extension
 
-root_old = '/home/ianthe/pipeline/'
-species_mapping_file = root+'ensembl_stable_id_species.json'
+species_mapping_file = pre.species_mapping_file
 species_mapping = {}
-pfam_gacutoff_file = root+'ga_cutoff.tsv'
+pfam_gacutoff_file = pre.pfam_gacutoff_file
 pfam_gacutoff = {}
-pfam_clans_file = root+'Pfam-A.clans.tsv' 
+pfam_clans_file = pre.pfam_clans_file 
 pfam_clans = {}
-hmm_results_file = root+'hmm_results.json'
+hmm_results_file = pre.hmm_results_file
 hmm_results_dict = {}
-excluded_repeats_file = root+'excluded_repeats.json'
+excluded_repeats_file = pre.pfam_excluded_repeats_file
 excluded_repeats={}
 
 repeat_threshold = 3 # >=

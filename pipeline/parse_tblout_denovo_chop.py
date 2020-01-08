@@ -1,20 +1,11 @@
 ## IvB May 2018
-# Mask Fasta sequences for PFAM hits
-# Derived form parse_tblout_init.py
-# Parses HMMscan domain table output
-# Use gathing cutoff for sequences
-# Select best Pfam model for each clan
-# Based on sequence bitscore maximalisation
-# Filter OGs based on minimum #repeats in #species
-# Prepare set of repeats for iterative domain annotation
-# Writes a fasta file for each clan with all of the hits 
+# Mask protein sequences to prepare motif detection
+# Select best matching Pfam and mask it
 
 # Input: HMMscan domain tblout, fasta file for OGs
-# Needs: Pfam gathering cutoff, pfam clans, 
-# Outputs: Fasta file with repeats for each OG-hit combination 
-# Logs: HMM_results.json for statistics, dict of repeat proteins because of species threshold.
+# Outputs: Fasta file without Pfam repeats, chopped out
 
-# ENV +-5 
+
 import sys, os
 import csv
 import operator
@@ -25,13 +16,6 @@ import pipeline_methods as pre
 input_ext = '.tblout'
 output_ext = '.fa' #hit replaced later by best pfam model of clan
 outfile_path = "" #defined based on hmm input path, fasta output path and extension
-
-repeat_threshold = 3 # >=
-species_threshold = 1 # >=
-
-#strict slicing of repeats
-spacing = 'ali'
-padding = 0
 
 hmmr_tbl = str(sys.argv[1]) #hammer output
 repeats = {}
@@ -46,8 +30,6 @@ if pre.pfam_hmm_path in hmmr_tbl:
 else: 
 	quit('Need valid .tblout from full pfam scan')
 
-#read clans
-pfam_clans = pre.get_pfam_clans(pre.pfam_clans_file)
 
 #read fasta
 fasta = pre.read_fasta(fasta_file)

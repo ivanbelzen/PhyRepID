@@ -4,6 +4,7 @@ May 2018
 
 First run Data collection Snakefile for dicts of selected orthologuous groups
 - genes_to_genetrees_file  - dict from retrieve_genetrees.py
+- orthologs_filtered_file  - dict from retrieve_orthologs_filter.py
 
 Mapping and paths defined in pipeline methods
 '''
@@ -27,7 +28,6 @@ rule all:
 		
 rule parse_genetrees:
 	input:
-		pre.genes_to_genetrees_file,
 		pre.ensembl_path+"{gene_id}.json"
 	output:
 		pre.fasta_path+"{genetree}_{gene_id}.fa",
@@ -55,5 +55,5 @@ rule repeat_detection_iteration:
 	output: 
 		pre.progress_path+"{og_id}.pfamhmm.done"
 	shell: 
-		'bash run_pfam_iteration_single.bash {input}' 
+		'bash run_pfam_iteration.sh {input}' 
 

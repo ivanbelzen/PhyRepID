@@ -1,18 +1,12 @@
 ## IvB March 2018
 # Parses HMMscan domain table output
-# Use gathing cutoff for sequences
-# Select best Pfam model for each clan
-# Based on sequence bitscore maximalisation
-# Filter OGs based on minimum #repeats in #species
-# Prepare set of repeats for iterative domain annotation
-# Writes a fasta file for each clan with all of the hits 
+# Use to finalize the iterative domain detection
+# Writes a fasta file with repeats, using env and +- 5 padding
 
 # Input: HMMscan domain tblout, fasta file for OGs
-# Needs: Pfam gathering cutoff, pfam clans, 
 # Outputs: Fasta file with repeats for each OG-hit combination 
-# Logs: HMM_results.json for statistics, dict of repeat proteins because of species threshold.
+# Logs: meme_results_final.json for statistics
 
-# ENV +-5 
 import sys, os
 import csv
 import operator
@@ -20,17 +14,15 @@ import re
 import json
 import pipeline_methods as pre
 
-root = '/home/ianthe/protein-repeat-evolution/'
-hmmr_tbl_input_path = root+'denovo/tblout/'
-fasta_output_path = root+'denovo/repeats/'
+hmmr_tbl_input_path = pre.denovo_tblout_path
+fasta_output_path = pre.denovo_repeats_path
 input_ext = '.tblout'
 output_ext = '.fa' 
 outfile_path = "" #defined based on hmm input path, fasta output path and extension
 
-root_old = '/home/ianthe/pipeline/'
-species_mapping_file = root+'ensembl_stable_id_species.json'
+species_mapping_file = pre.species_mapping_file
 species_mapping = {}
-results_file = root+'meme_results_final.json'
+results_file = pre.meme_hmm_results_final_file
 results_dict = {}
 
 #strict slicing of repeats

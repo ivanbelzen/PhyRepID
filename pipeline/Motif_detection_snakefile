@@ -90,4 +90,4 @@ rule repeat_detection_iteration:
 	output: 
 		pre.progress_path+"{og_id}.meme_hmm.done"
 	shell: 
-		'bash run_meme_iteration.bash {input}' 	
+		'bash run_meme_iteration.sh {input}' 	

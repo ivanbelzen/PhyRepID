@@ -7,7 +7,6 @@
 # Input: HMMscan domain tblout of one hit only, fasta file for OGs
 # Needs: Pfam clans, 
 # Outputs: Fasta file with repeats for the input OG-hit combination 
-# Logs: none?
 
 import sys, os
 import csv
@@ -16,23 +15,16 @@ import re
 import json
 import pipeline_methods as pre
 
-#TODO INCLUDE new best hits function?
-
-root = '/home/ianthe/protein-repeat-evolution/'
-hmmr_tbl_input_path = root+'pfam/tblout/'
-fasta_output_path = root+'pfam/repeats/'
+hmmr_tbl_input_path = pre.pfam_tblout_path
+fasta_output_path = pre.pfam_repeats_path
 input_ext = '.tblout'
 output_ext = '.fa' 
 outfile_path = "" #defined based on hmm input path, fasta output path and extension
 
-root_old = '/home/ianthe/pipeline/'
-species_mapping_file = root+'ensembl_stable_id_species.json'
+species_mapping_file = pre.species_mapping_file
 species_mapping = {}
-pfam_clans_file = root_old+'Pfam-A.clans.tsv' 
+pfam_clans_file = pre.pfam_clans_file 
 pfam_clans = {}
-
-repeat_threshold = 3 # >=
-species_threshold = 1 # >=
 
 #strict slicing of repeats
 spacing = 'ali'

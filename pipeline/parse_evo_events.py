@@ -324,7 +324,7 @@ treefix_path = pre.pfam_treefix_path
 output_image = True #Outputs tree as PDF, True for debugging and visualisation, False for production purposes
 output_adjusted_repeat_tree = True
 
-rearranged_nodes_log_file = pre.root+'log_pfam_rearranged_nodes.json'
+rearranged_nodes_log_file = pre.pfam_rearranged_nodes_log_file
 rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
 
 evo_events_log_file = pre.pfam_evo_events_file
@@ -341,7 +341,7 @@ reconcile_repeat_gene_tree()
 
 ## MEME
 
-rearranged_nodes_log_file = pre.root+'log_meme_rearranged_nodes.json'
+rearranged_nodes_log_file = pre.meme_rearranged_nodes_log_file
 rearranged_log = {'settings':{'threshold':dupconsistency_threshold}}
 
 evo_events_log_file = pre.meme_evo_events_file
