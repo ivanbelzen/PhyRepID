@@ -1,34 +1,26 @@
 ﻿# PhyRepID pipeline
 
-## Introduction
+## Overview
 
 The Phylogenomics Repeat Identification 
 (PhyRepID) pipeline quantifies repeat evolution using comparative (phylo)genomics of orthologous groups (OGs). 
 
-The pipeline consists of ~~three~~ four components: 
+The pipeline consists of four components: 
 
- 1. **Repeat detection:** Detection of a broad spectrum of protein repeats consisting of either structural domains or short linear motif sequences.
- 2. **Repeat optimization:** Improving the sensitivity and precision of detection by making OG-specific repeat models.
- 3. **Tree reconciliation:** Inferring evolutionary events in the repeat region through phylogenetic comparison of repeat trees to gene trees.
- 4. **Post-processing / duplication analysis:** Finally, to quantify repeat evolution and compare protein families, a PRD (protein repeat dupllication) score was derived from the post-ancestral duplications and the number of proteins in the OG.
+ 1. **Data collection:** Retrieve protein sequences and gene trees from ENSEMBL from orthologous groups based  on a human protein-coding gene and its relation to 13 other selected representative vertebrate species.
+ 2. **Repeat detection & optimization:** Detection of a broad spectrum of protein repeats consisting of either structural domains or motif sequences. Followed by improving the sensitivity and precision of detection by making OG-specific repeat models.
+ 4. **Phylogenetic tree reconciliation:** Inferring evolutionary events in the repeat region through phylogenetic comparison of repeat trees to gene trees.
+ 5. **Post-processing & duplication analysis:** Finally, to quantify repeat evolution and compare protein families, a PRD (protein repeat dupllication) score was derived from the post-ancestral duplications and the number of proteins in the OG.
 
-## Overview of the workflow
+The workflow is defined in Snakemake.
+[Detailed documentation can be found in the docs](docs/pipeline_documentation.md)
 
-The workflow for components 1-3 is defined in two Snakemake files which link together Python and Bash scripts. Post-processing and analysis of the inferred repeat duplications, as well as comparisons with other datasets are done with various Python and R scripts. 
-
- - Data collection (Snakemake)
- - Snakemake: repeat detection
- - Scripts collection: repeat duplication analysis 
-
-Detailed documentation can be found here
-[https://github.com/ivanbelzen/protein-repeat-evolution/blob/master/documentation.md](https://github.com/ivanbelzen/protein-repeat-evolution/blob/master/documentation.md)
-
-## Prerequisites
+## Dependencies
 
 ### Python
 Version 2.7 with pip (9.0.1)
- *pipeline\_methods.py*
-contains configuration like paths and environmental variables, as well as methods used by other Python scripts
+
+ *pipeline\_methods.py* contains configuration like paths and environmental variables, as well as functions used by other Python scripts
 
 **Data retrieval and processing**
 SPARQLWrapper (1.8.1)
@@ -41,14 +33,6 @@ anaconda-client (1.2.2)
 conda (4.3.27)
 treefix (1.1.10)
 ete3 (3.0.0b36)
-
-**Analysis:**
-matplotlib (2.2.2)
-matplotlib-venn (0.11.5)
-seaborn (0.9.0)
-scipy (1.1.0)
-scikit-learn (0.19.1)
-goatools (0.8.4)
 
 ### Software
 
@@ -102,7 +86,6 @@ Huerta-Cepas, J., Serra, F. & Bork, P., 2016. ETE 3: Reconstruction, Analysis, a
 - A list of human genes under positive selection as measured by dN/dS since the divergence of vertebrates was acquired from Sebastien Moretti on 04-09-2018
 Moretti, S. et al., 2014. Selectome update: quality control and computational improvements to a database of positive selection. Nucleic acids research, 42(Database issue), pp.D917–21.
 
-  
 
 - Z-scores for synonymous, non-synonymous and loss-of-function mutations were acquired for each human gene, as well as the probability of being intolerant for loss-of-function mutations from the ExAC database v0.3.1 
 Karczewski, K.J. et al., 2016. The ExAC Browser: Displaying reference data information from over 60,000 exomes. Available at: http://dx.doi.org/10.1101/070581.
