@@ -9,10 +9,8 @@
 
 import sys,json
 import pandas as pd
-import matplotlib.pyplot as plt
 import pipeline_methods as pre
 import numpy as np
-import seaborn as sns
 
 human_mapping_file = pre.human_mapping_file
 

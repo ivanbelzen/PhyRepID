@@ -10,11 +10,8 @@
 # - /maptotree/{identifier}_maptotree.nhx
 
 import sys, json
-import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.preprocessing import StandardScaler, Normalizer, RobustScaler, Imputer
 import pandas as pd
-from sklearn.decomposition import PCA
 
 from ete3 import Tree, TreeStyle, NodeStyle, TextFace, PhyloTree, AttrFace, CircleFace, faces
 

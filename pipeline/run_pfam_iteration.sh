@@ -16,18 +16,7 @@
 shopt -s nullglob
 
 # configuration file
-
-root=/home/ianthe/protein-repeat-evolution/
-iq_tree_path=/home/ianthe/pipeline/
-orthologs_path=${root}fasta_ogs/
-pfam_path=${root}pfam/hmm/
-tblout_path=${root}pfam/tblout/
-hmm_path=${root}pfam/profiles/
-repeats_path=${root}pfam/repeats/
-aligned_path=${root}pfam/aligned/
-tree_path=${root}pfam/trees/
-final_alignments_path=${root}pfam/alignments/
-progress_path=${root}/progress_files/
+source config.sh
 
 threshold_length=75	#minimum percentage of start hmm profile length 
 
@@ -37,22 +26,14 @@ ogs_id=${file//${pfam_path}/}
 ogs_id=${ogs_id//.tblout/} 	#genetree_gene
 	
 echo ${ogs_id} #progress indicator
-
-touch ${progress_path}${ogs_id}.pfamhmm.done	
-exit
-
-#genetree="$(echo ${ogs_id} | cut -d'_' -f1)"
-#genetree=${genetree//ENSGT/} #numeric part of gene tree
-#genetree="$(echo ${genetree}|sed 's/^0*//')"
-#echo ${genetree} 
 	
 python ${root}parse_tblout_init.py ${file} ${orthologs_path}${ogs_id}.fa 
 #full tblout as input
 #outputs to pfam/repeats/{ogs_id}.fa
 
-for file in ${repeats_path}${ogs_id}*	#should be only one, but you don't know name
+for file in ${pfam_repeats_path}${ogs_id}*	#should be only one, but you don't know name
 do
-	og_hit=${file//${repeats_path}/} # genetree _ human gene _ hit pfam domain 
+	og_hit=${file//${pfam_repeats_path}/} # genetree _ human gene _ hit pfam domain 
 	og_hit=${og_hit//.fa/}
 	hit_only=${og_hit//${ogs_id}_/}
 	echo ${hit_only}
@@ -66,18 +47,18 @@ do
 		cp ${file} ${file}.old
 		#compare new .fa with old .fa in loop
 	
-		mafft --quiet --localpair --maxiterate 1000 ${file} > ${aligned_path}${og_hit}.linsi.fa 			
+		mafft --quiet --localpair --maxiterate 1000 ${file} > ${pfam_aligned_path}${og_hit}.linsi.fa 			
 				
-		if [[ -f ${hmm_path}${og_hit}.hmm ]]; then
-			rm ${hmm_path}${og_hit}.hmm
+		if [[ -f ${pfam_hmm_path}${og_hit}.hmm ]]; then
+			rm ${pfam_hmm_path}${og_hit}.hmm
 		else 
 			start_length=0 	#if first time iteration, reset start_length to save later
 		fi		
 			
-		hmmbuild --fast --symfrac 0.6 -n ${hit_only} ${hmm_path}${og_hit}.hmm ${aligned_path}${og_hit}.linsi.fa 		
+		hmmbuild --fast --symfrac 0.6 -n ${hit_only} ${pfam_hmm_path}${og_hit}.hmm ${pfam_aligned_path}${og_hit}.linsi.fa 		
 			
 		#check for length of profile, prevent profile drift
-		leng_str=`grep -e "LENG [0-9]*" ${hmm_path}${og_hit}.hmm | head -1`
+		leng_str=`grep -e "LENG [0-9]*" ${pfam_hmm_path}${og_hit}.hmm | head -1`
 		length=${leng_str/LENG /}
 			
 		#enforce minimum length of 20
@@ -85,10 +66,10 @@ do
 			break
 		fi
 					
-		hmmpress -f ${hmm_path}${og_hit}.hmm 
-		hmmscan --domT 0 --domtblout ${tblout_path}${og_hit}.tblout ${hmm_path}${og_hit}.hmm ${orthologs_path}${ogs_id}.fa &>/dev/null 
+		hmmpress -f ${pfam_hmm_path}${og_hit}.hmm 
+		hmmscan --domT 0 --domtblout ${pfam_tblout_path}${og_hit}.tblout ${pfam_hmm_path}${og_hit}.hmm ${orthologs_path}${ogs_id}.fa &>/dev/null 
 			
-		python ${root}parse_tblout_iterate.py ${tblout_path}${og_hit}.tblout ${orthologs_path}${ogs_id}.fa
+		python ${root}parse_tblout_iterate.py ${pfam_tblout_path}${og_hit}.tblout ${orthologs_path}${ogs_id}.fa
 			
 		diff ${file} ${file}.old  &>/dev/null
 
@@ -102,10 +83,11 @@ do
 		
 	rm ${file}.old
 		
-	python ${root}parse_tblout_final.py ${tblout_path}${og_hit}.tblout ${orthologs_path}${ogs_id}.fa
+	python ${root}parse_tblout_final.py ${pfam_tblout_path}${og_hit}.tblout ${orthologs_path}${ogs_id}.fa
 	
-	mafft --quiet --localpair --maxiterate 1000 ${file} > ${aligned_path}${og_hit}.linsi.fa 
-	cp ${aligned_path}${og_hit}.linsi.fa ${final_alignments_path}${og_hit}.linsi.fa  		
+	mafft --quiet --localpair --maxiterate 1000 ${file} > ${pfam_aligned_path}${og_hit}.linsi.fa 
+	cp ${pfam_aligned_path}${og_hit}.linsi.fa ${pfam_final_alignments_path}${og_hit}.linsi.fa  		
 			
 done
 
+touch ${progress_path}${ogs_id}.pfamhmm.done	

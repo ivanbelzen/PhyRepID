@@ -15,9 +15,16 @@ import pipeline_methods as pre
 
 rule all:
 	input: 
+		pre.pfam_file,
 		pre.orthologs_filtered_file,
 		pre.genes_to_genetrees_file
 
+rule setup_pipeline:
+	output:
+		pre.pfam_file
+	shell: 
+		'bash setup_pipeline.sh'
+		 
 #Query orthologs of human protein coding genes from EBI Sparql endpoint
 rule retrieve_orthologs:
 	output:

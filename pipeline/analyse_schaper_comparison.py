@@ -25,8 +25,8 @@ human_mapping_file = pre.human_mapping_file
 schaper_data = {} # human ortholog clan pfam_hit relationship
 
 schaper_summary_df_file = pre.schaper_comparison_file #used in phyrepid export
-schaper_detailed_df_file = pre.root+"schaper_detailed_comparison.json"
-schaper_detailed_export = pre.root+"phyrepid_schaper_comparison.tsv"
+schaper_detailed_df_file = pre.schaper_detailed_df_file
+schaper_detailed_export = pre.schaper_detailed_export
 
 ## Build Schaper data dictionary
 

@@ -34,7 +34,7 @@ pfam_clans_file = pre.pfam_clans_file
 pfam_clans = {}
 hmm_results_file = pre.hmm_results_file
 hmm_results_dict = {}
-excluded_repeats_file = pre.pfam_excluded_repeats_file
+excluded_repeats_file = pre.pfam_excluded_ogs_file
 excluded_repeats={}
 
 repeat_threshold = 3 # >=

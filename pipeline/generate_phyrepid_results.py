@@ -15,10 +15,8 @@
 #(take out unit_cv only additional analysis but not required for table)
 # Needs output of analyse schaper comparison if available.
 
-
 import sys,json
 import pandas as pd
-import matplotlib.pyplot as plt
 import pipeline_methods as pre
 import numpy as np
 

@@ -10,7 +10,6 @@
 # for human protein coding gene ids which do not comply to these restrictions
 
 import requests, sys, json, os.path
-import matplotlib.pyplot as plt
 import numpy as np
 import pipeline_methods as pre
 

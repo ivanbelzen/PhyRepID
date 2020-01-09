@@ -11,8 +11,6 @@ import sys, os, glob, json
 import numpy as np
 import pipeline_methods as pre
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 species_mapping = pre.get_species_mapping(pre.species_mapping_file)
 

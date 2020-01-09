@@ -1,13 +1,11 @@
-import csv,json, os
-import numpy as np
-root = '/home/ianthe/protein-repeat-evolution/'
+root = ''
 
 species_mapping_file = root+'ensembl_stable_id_species.json'
 species_tree_file = root+'ensembl_taxon_species_tree.phy'
 
-pfam_gacutoff_file = root+'ga_cutoff.tsv'
-pfam_clans_file = root+'Pfam-A.clans.tsv' 
-pfam_file=root+'/pfam/Pfam-A.hmm'
+pfam_gacutoff_file = root+'resources/ga_cutoff.tsv'
+pfam_clans_file = root+'resources/Pfam-A.clans.tsv' 
+pfam_file=root+'/resources/Pfam-A.hmm'
 
 taxon_uri =  'http://identifiers.org/taxonomy/'
 gene_uri_prefix = 'http://rdf.ebi.ac.uk/resource/ensembl/' 
@@ -16,9 +14,7 @@ gene_uri_prefix = 'http://rdf.ebi.ac.uk/resource/ensembl/'
 genetree_path = root+'genetrees_nhx/'
 ensembl_path = root+'ensembl_api/'     
 fasta_path = root+'fasta_ogs/'
-fasta_masked_path=root+'fasta_ogs_masked/'
 fasta_chopped_path=root+'fasta_ogs_chopped/'
-full_alignment_path = root+'full_alignment/'
 maptotree_path = root+'maptotree/'
 
 pfam_hmm_path=root+'pfam/hmm/'
@@ -30,7 +26,7 @@ pfam_trees_path=root+'pfam/trees/'
 pfam_treefix_path = root+'pfam/treefix/'
 pfam_treefix_adjusted_path = root+'pfam/treefix/adjusted/'
 pfam_treefix_adjusted_images_path = root+'pfam/treefix/adjusted/images/'
-#pfam_alignments_path=root+'pfam/alignments/'
+pfam_final_alignments_path=root+'pfam/alignments/'
 progress_path=root+'progress_files/'
 
 meme_output_path = root+'denovo/meme/'
@@ -39,30 +35,30 @@ denovo_repeats_path = root+'denovo/repeats/'
 denovo_tblout_path=root+'denovo/tblout/'
 denovo_profiles_path=root+'denovo/profiles/'
 denovo_aligned_path=root+'denovo/aligned/'
-#denovo_final_alignments_path=root+'denovo/alignments/'
+denovo_final_alignments_path=root+'denovo/alignments/'
 denovo_trees_path=root+'denovo/trees/'
 denovo_treefix_path = root+'denovo/treefix/'
 denovo_treefix_adjusted_path = root+'denovo/treefix/adjusted/'
 denovo_treefix_adjusted_images_path = root+'denovo/treefix/adjusted/images/'
 
-#Mapping files
-log_parse_genetree_file = root+'log_parse_genetree.txt' 
-orthologs_file = root+'orthologs.json'
-orthologs_filtered_file = root+'orthologs_filtered.json' 					#output of filter_orthologs.py
-genes_to_genetrees_file = root+'genes_to_genetrees.json'	#output of retrieve_genetrees.py
-hmm_results_file = root+'hmm_results.json'
-hmm_results_final_file = root+'hmm_results_final.json'
-meme_hmm_results_file = root+'meme_hmm_results.json'
-meme_hmm_results_final_file = root+'meme_results_final.json'
+#Intermediary Mapping files
+log_parse_genetree_file = root+'logs/log_parse_genetree.txt' 
+orthologs_file = root+'logs/orthologs.json'
+orthologs_filtered_file = root+'logs/orthologs_filtered.json' 					
+genes_to_genetrees_file = root+'logs/genes_to_genetrees.json'	
+hmm_results_file = root+'logs/hmm_results.json'
+hmm_results_final_file = root+'logs/hmm_results_final.json'
+meme_hmm_results_file = root+'logs/meme_hmm_results.json'
+meme_hmm_results_final_file = root+'logs/meme_hmm_results_final.json'
 					
-excluded_orth_rel_file = root + 'excluded_orth_rel.json'
-excluded_pairs_file = root + 'excluded_pairs.json'
-meme_results_parse_log_file = root+'meme_results_parse_log.json'
-pfam_rearranged_nodes_log_file = root+'log_pfam_rearranged_nodes.json'
-meme_rearranged_nodes_log_file = root+'log_meme_rearranged_nodes.json'
+excluded_orth_rel_file = root+'logs/excluded_orth_rel.json'
+excluded_pairs_file = root+'logs/excluded_pairs.json'
+meme_results_parse_log_file = root+'logs/meme_results_parse_log.json'
+pfam_rearranged_nodes_log_file = root+'logs/log_pfam_rearranged_nodes.json'
+meme_rearranged_nodes_log_file = root+'logs/log_meme_rearranged_nodes.json'
 
-meme_excluded_ogs_file = root+'meme_excluded_ogs.json'
-pfam_excluded_repeats_file = root+'pfam_excluded_repeats.json'
+meme_excluded_ogs_file = root+'logs/meme_excluded_ogs.json'
+pfam_excluded_ogs_file = root+'logs/pfam_excluded_ogs.json'
 
 
 ### Output files ###
@@ -74,26 +70,30 @@ phyrepid_results_human_full_lineage = root+'phyrepid_results_human_full_lineage.
 phyrepid_results_human_only = root+'phyrepid_results_human_only.tsv'
 
 #repeat stats
-pfam_repeat_stats_file = root+'pfam_repeat_stats.json'
-meme_repeat_stats_file = root+'meme_repeat_stats.json'
-pfam_repeat_stats_initial_file = root+'pfam_repeat_stats_initial.json'
-pfam_repeat_stats_initial_filtered_file = root+'pfam_repeat_stats_initial_filtered.json'
+pfam_repeat_stats_file = root+'logs/pfam_repeat_stats.json'
+meme_repeat_stats_file = root+'logs/meme_repeat_stats.json'
+pfam_repeat_stats_initial_file = root+'logs/pfam_repeat_stats_initial.json'
+pfam_repeat_stats_initial_filtered_file = root+'logs/pfam_repeat_stats_initial_filtered.json'
 		
 #evo events
-pfam_evo_events_file = root+'pfam_evo_events.json'
-meme_evo_events_file = root+'meme_evo_events.json'
-pfam_evo_gt_file = root+"pfam_evo_events_genetrees.json"
-meme_evo_gt_file = root+"meme_evo_events_genetrees.json"
+pfam_evo_events_file = root+'logs/pfam_evo_events.json'
+meme_evo_events_file = root+'logs/meme_evo_events.json'
+pfam_evo_gt_file = root+'logs/pfam_evo_events_genetrees.json'
+meme_evo_gt_file = root+'logs/meme_evo_events_genetrees.json'
+
+human_mapping_file = root+'logs/og_human_mapping.json' #OG to human gene mapping from generate_human_protein_mapping.py
+
+schaper_comparison_file = root+'logs/schaper_comparison.json' #output from analyse_schaper_comparison.py
+schaper_detailed_df_file = root+'logs/schaper_detailed_comparison.json'
+schaper_detailed_export = root+'phyrepid_schaper_comparison.tsv'
+
 
 # Additional datasets - files not required 
 selectome_file = root+'resources/selectome.tsv' #needs human mapping 
-human_mapping_file = root+'og_human_mapping.json' #OG to human gene mapping from generate_human_protein_mapping.py
 exac_file = root+'resources/fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt' #needs gene symbol
 human_gene_symbol_file = root+'resources/human_gene_symbol.tsv'
 schaper_input_file_1 = root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_PFAM.newick.gz',
-schaper_input_file_2 = root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick.gz'
-schaper_comparison_file = root+'schaper_comparison.json' #output from analyse_schaper_comparison.py
-		
+schaper_input_file_2 = root+'resources/eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick.gz'		
 
 ### ###
 
