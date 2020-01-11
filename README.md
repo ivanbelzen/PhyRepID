@@ -23,16 +23,16 @@ Version 2.7 with pip (9.0.1)
  *pipeline\_methods.py* contains configuration like paths and environmental variables, as well as functions used by other Python scripts
 
 **Data retrieval and processing**
-SPARQLWrapper (1.8.1)
-requests (2.18.4)
-pandas (0.23.1)
-numpy (1.13.1)
+ - SPARQLWrapper (1.8.1) 
+ - requests (2.18.4) 
+ - pandas (0.23.1) 
+ - numpy (1.13.1)
 
 **Tree reconciliation** 
-anaconda-client (1.2.2)
-conda (4.3.27)
-treefix (1.1.10)
-ete3 (3.0.0b36)
+ - anaconda-client (1.2.2)
+ - conda (4.3.27) 
+ - treefix (1.1.10) 
+ - ete3 (3.0.0b36)
 
 ### Software
 

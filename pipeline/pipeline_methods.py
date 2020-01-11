@@ -472,22 +472,6 @@ def write_fasta_file(outfile, best_hit_repeats, fasta, padding = 0):
 			outfile.write(sequence[begin-1:end]+'\n')
 			
 
-
-def write_masked_file(outfile, best_hit_repeats, fasta):
-	#replace pfam domain with XXX'es in protein sequences
-			
-	best_hit_repeats.pop('score')
-	with open(outfile, 'w') as outfile:	
-		for protein_uri in fasta:
-			sequence = fasta[protein_uri]
-			outfile.write('>'+protein_uri+'\n')
-			protein_uri_hits = [best_hit_repeats[identifier] for identifier in best_hit_repeats if protein_uri in identifier]
-			for value in protein_uri_hits: #protein uri _ hit _ lead number
-				begin = int(value[0]); end = int(value[1])
-				#print(len(sequence[begin-1:end]), len('x'*(end-begin+1)))	#equal length
-				sequence = sequence.replace(sequence[begin-1:end], 'x'*(end-begin+1))
-				
-			outfile.write(sequence+'\n')
 			
 def write_chopped_file(outfile, best_hit_repeats, fasta):
 	minimum_length_meme = 30 

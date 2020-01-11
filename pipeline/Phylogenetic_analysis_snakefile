@@ -56,7 +56,7 @@ rule pfam_mv_iqtree:
 	shell:
 		'cp {input} {output}'
 		
-rule pfam_prepare_treefix:
+rule pfam_generate_treefix_input:
 	input:
 		treefile = pre.pfam_aligned_path+"{og}_{hit}.linsi.fa.treefile", genetree = pre.genetree_path+"{og}.nhx"
 	output:
@@ -107,7 +107,7 @@ rule meme_mv_iqtree:
 	shell:
 		'cp {input} {output}'
 				
-rule meme_prepare_treefix:
+rule meme_generate_treefix_input:
 	input:
 		treefile = pre.denovo_aligned_path+"{og_id}.linsi.fa.treefile", genetree = pre.genetree_path+"{og_id}.nhx"
 	output:
