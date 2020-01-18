@@ -274,9 +274,8 @@ Parse TreeFix output by removing inconsistent duplications, inferring events and
 A protein repeat duplication (PRD) score is calculated for each OG as relative measure of repeat evolution. 
 This PRD score can be used to rank protein families, compare them based on repeat evolution and find OGs with rapidly-evolving repeats. 
  
-<p align="center"> 
 <b>PRD score = (x - u) / n;</b><br />
- with x = netto duplications since most recent common ancestor (gene tree root); u = mean duplications in the full dataset, n = number of proteins in the OG.</p>
+ with x = netto duplications since most recent common ancestor (gene tree root); u = mean duplications in the full dataset, n = number of proteins in the OG.
 
 Count duplications/losses using tree reconciliation of repeat trees with gene trees. Note: the netto duplications are non-ancestral duplications, taking into account the genetree root instead of vertebrate common ancestor
 

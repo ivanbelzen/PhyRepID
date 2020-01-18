@@ -8,15 +8,12 @@ Ranking of all OGs according to PRD score, annotated with duplications and losse
 
 PRD score is the relative measure of protein domain evolution for the repeat region the OG.
 
-PRD_score = (netto_dup - mean_dup) / othologs_cnt
-
-where mean_dup (arithmetic average of netto duplications in the dataset) is a constant
-
+<p align="center"> 
+<b>PRD score = (x - u) / n;</b><br />
+ with x = netto duplications since most recent common ancestor (gene tree root); u = mean duplications in the full dataset, n = number of proteins in the OG.</p>
   
 
-File made by script: …
-
-  
+File made during **Post-processing**
   
 
 Columns
