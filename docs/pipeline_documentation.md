@@ -3,7 +3,7 @@
  
 ## Overview of the workflow
 
-The workflow is defined in five Snakefiles which link together tools, algorithms, Python and Bash scripts. In addition, comparisons with other datasets are done with stand-alone Python and R scripts. 
+The workflow is defined in five Snakefiles which link together tools, algorithms, Python and Bash scripts. In addition, comparisons with other datasets are done with stand-alone Python and R scripts [(documentation of analysis scripts)](docs/analysis_documentation.md).
 
  1. Data collection
  2. Domain detection (Pfam) & optimization
@@ -14,7 +14,7 @@ The workflow is defined in five Snakefiles which link together tools, algorithms
 ## Setup and running
 
  - Define root in *pipeline_methods.py* and *config.sh*, if desired, (path) variables can also be changed. 
- - Install the required tools and dependencies (see README.md)  
+ - Install the required tools and dependencies (see [README.md](README.md))
  - Run the Snakefiles in the order defined above.
 
 ##   Data collection 
@@ -22,7 +22,7 @@ The workflow is defined in five Snakefiles which link together tools, algorithms
 **setup_pipeline**
 
 Makes the required folder structure and downloads the Pfam-A hidden markov models (.hmm files).
-Note: fist do the manual steps of installing dependencies (see README.md) and defining the root directory.
+Note: fist do the manual steps of installing dependencies (see [README.md](README.md)) and defining the root directory.
 
 **retrieve\_orthologs(.py)**
 

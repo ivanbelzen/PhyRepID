@@ -13,8 +13,8 @@ The pipeline consists of four components:
  4. **Post-processing & duplication analysis:** Calculation of a protein repeat duplication (PRD) score for each OG as relative measure of repeat evolution. Next, a PRD score ranking  enables comparison of protein families to each other and find OGs with rapidly-evolving repeats. 
  
 <p align="center"> 
-<b>PRD score = (x - u) / n;</b><br />
- with x = duplications since most recent common ancestor; u = mean duplications in the full dataset, n = number of proteins in the OG.</p>
+<b>PRD score = (x - u) / n;</b></p>
+ with x = duplications since most recent common ancestor; u = mean duplications in the full dataset, n = number of proteins in the OG.
 
 The workflow is defined in Snakemake.
 [Detailed documentation can be found in the docs](docs/pipeline_documentation.md)
