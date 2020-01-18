@@ -10,7 +10,7 @@ PRD score is the relative measure of protein domain evolution for the repeat reg
 <b>PRD score = (x - u) / n;</b><br />
  with x = netto duplications since most recent common ancestor (gene tree root); u = mean duplications in the full dataset, n = number of proteins in the OG.</p>
  
-File made during **Post-processing**
+File made during **Post-processing - generate_phyrepid_results**
 
 Columns:
 -   genetree_id: \<identifier> 
@@ -20,15 +20,15 @@ HGNC approved gene symbol, used for display purposes only
 -   prd_score: \<float>
 Quantification of protein repeat evolution according in this repeat region the OG
 -   identifier: \<identifier>
- Internal identifier used in the pipeline \<genetree_id>_<gene_id>_<pfam_model_id>
+ Internal identifier used in the pipeline \<genetree_id>\_<gene_id>\_\<hit>
  -   netto_dup: \<integer>
 Duplications since the most recent common ancestor in the gene tree
 -   loss: \<integer>
 Number of losses as inferred by tree reconciliation of the repeat tree with the gene tree.
 -   orthologs_cnt: \<integer>
 Number of proteins in the orthologous group.
--   clan 
-Pfam clan that the Pfam model is associated which makes op the repeat.
+-   clan: \<string> 
+Pfam clan of the Pfam model which makes up the repeat.
 -   unit_cv: \<integer>
 Co-variance of the number of repeat units (occurrences) there are in the OG
 -   selectome: [0,1]
@@ -46,7 +46,9 @@ Most recent common ancestor in the gene tree
 
 ## Sup. table 2: Human full lineage  
 
-First columns are the same as with SupTable1.
+File made during **Post-processing - generate_phyrepid_results_human**
+
+First columns are the same as in Sup. table 1.
 
  - gene_symbol
  - identifier
@@ -59,11 +61,13 @@ First columns are the same as with SupTable1.
  - human_protein_cnt: \<integer>
 Number of human proteins in the orthologous group.
 
-## Sup. Table 3: Human branch only 
+## Sup. table 3: Human branch only 
+
+File made during **Post-processing - generate_phyrepid_results_human**
+
+First columns are the same as in Sup. table 1.
 
 Ranking: filtered on duplication_score > 0 and sorted by human_frac, descending.
-
-First columns are the same as with SupTable1.
 
  - gene_symbol
  - identifier
@@ -76,4 +80,25 @@ First columns are the same as with SupTable1.
  - human_protein_cnt: \<integer>
 Number of human proteins in the orthologous group.
 
+## Sup. tables 5 and 6 Repeat analysis Pfam and MEME
 
+File made during **Post-processing - analyse_repeat_stats**
+
+First columns are the same as in Sup. table 1.
+ 
+- row_id:  \<identifier>. Unique row number. 
+- identifier: \<identifier>. Internal identifier used in the pipeline \<genetree_id>\_<gene_id>\_\<hit>
+- ortholog_id: \<identifier> 
+Persistent identifier (PID) of gene in ENSEMBL database.
+- species: \<identifier> Species abbreviation.
+- clan: \<string> 
+*(Pfam only)* Pfam clan of the Pfam model which makes up the repeat.
+- model: \<string> 
+*(Pfam only)* Pfam model which makes up the repeat.
+- unit_cnt: \<integer> Number of repeat units.
+- model_length: \<integer> Length of repeat unit hidden markov model in  amino acids.
+- max_dist: \<integer> Number of amino acids between two repeat units, maximum.
+- protein_length:  \<integer> Protein length in amino acids.
+- protein_cov: \<float> Fraction of protein length covered by repeat units.
+- repeat_aa :  \<integer> Total number of amino acids covered by repeat units.
+- repeat_cov: \<float> Fraction of total repeat length covered by repeat units.
