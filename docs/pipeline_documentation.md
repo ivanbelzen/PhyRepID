@@ -358,7 +358,7 @@ Makes a table with all columns: ExAC, Selectome, Schaper, gene tree annotation.
    - phyrepid_results_full.tsv
   
   
-**generate_phyrepid_results_human**
+**generate_phyrepid_results_human(.py)**
 
 Analyses only evens in human lineage (full lineage) or branch (human only) and outputs table with duplications on those branches only.
 
