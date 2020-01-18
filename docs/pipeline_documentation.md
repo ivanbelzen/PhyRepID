@@ -6,7 +6,7 @@
 The workflow is defined in five Snakefiles which link together tools, algorithms, Python and Bash scripts. In addition, comparisons with other datasets are done with stand-alone Python and R scripts. 
 
  1. Data collection
- 2. Repeat detection (Pfam) & optimization
+ 2. Domain detection (Pfam) & optimization
  3. Motif detection (MEME) & optimization
  4. Phylogenetic analysis
  5. Post-processing
@@ -22,7 +22,7 @@ The workflow is defined in five Snakefiles which link together tools, algorithms
 **setup_pipeline**
 
 Makes the required folder structure and downloads the Pfam-A hidden markov models (.hmm files).
-Note: fist do the manual steps of installing dependencies (see README.md)  an defining the root directory!
+Note: fist do the manual steps of installing dependencies (see README.md) and defining the root directory.
 
 **retrieve\_orthologs(.py)**
 
@@ -38,10 +38,10 @@ Default 14 species, if possible, in pairs of closely related species: human-mous
 
 **retrieve_orthologs_filter(.py)**
 
-Filter criteria for the OG which is formed by a human protein coding gene that:
+Filter criteria for the OG that is formed by a human protein coding gene that:
 - should have an ortholog in mouse
--   should have orthologs for all species in group or none (pairs defined in ensembl\_stable\_id\_species.json) “excluded pairs”
--   maximum of 3 orthologs in a species (removed if >3 “excluded orth rel”)
+-   should either have orthologs in all members of a group of closely related species or none of them (pairs of closely related species defined in ensembl\_stable\_id\_species.json) (removed are in “excluded pairs”)
+-   maximum of 3 orthologs in a species (removed are in “excluded orth rel”)
 
 
 - Input: 
@@ -65,12 +65,12 @@ Queries ensembl API for genetrees of the filtered orthologs. Downloading and sav
 
 Completed if: ensembl\_api/{gene\_id}.json file is created for all gene\_ids in *orthologs\_filtered.json*.
 
-## Repeat detection (Pfam)
-Check if next steps are done for all proteins are generated during data collection by using *genes\_to\_genetrees.json* as mapping. For each *og\_id* in genes\_to\_genetrees.json where *{og\_id} = {genetree\_id}\_{gene\_id}*.
+## Domain detection (Pfam)
+Check if next steps are done for all protein families that are retrieved  during data collection by using *genes\_to\_genetrees.json* as mapping. For each *og\_id* in genes\_to\_genetrees.json where *{og\_id} = {genetree\_id}\_{gene\_id}*.
 
 **parse\_genetree(.py)** 
 
-Subtract smallest gene tree  containing all orthologs; and acquire fasta sequences for proteins in gene tree. 
+Extract smallest gene tree containing all orthologs by parsing the unfiltered, large gene tree retrieved in the previous step. Also acquire fasta sequences of the orthologs. 
 
 - Input:
   -    ensembl\_api/{gene\_id}.json
@@ -81,7 +81,7 @@ Subtract smallest gene tree  containing all orthologs; and acquire fasta sequenc
 
 **hmmpress, hmmscan**
 
-Detect Pfam domains using HMMER3 using liberal thresholds: sequence bit score of 12.5 and domain score 0. 
+Detect Pfam domains using HMMER3 using liberal thresholds: hmmscan using a sequence bit score of 12.5 and domain score 0. 
 
 - Input:
   -  fasta\_ogs/{og\_id}.fa
@@ -91,7 +91,7 @@ Detect Pfam domains using HMMER3 using liberal thresholds: sequence bit score of
 
 **repeat_detection_iteration**
 
-Iterative pfam domain annotation. Improvement on regular hmmscan for more accurate repeat detection.
+Improvement on default HMMscan for more accurate repeat detection by making OG-specific hidden markov models (HMMs) for a repeat unit by using an iterative process. 
 
 run\_pfam\_iteration.sh *\$1: pfam/hmm/{og\_id}.tblout*
 
@@ -100,7 +100,7 @@ Scripts:
 
     -   Use sequences gathering cutoff, select best Pfam model for each clan based on sequence bitscore maximalisation (over-all).
 
-    -   Filter Pfam hits based on minimum \#repeats (&gt;=3) in human, presence in mouse.
+    -   Filter Pfam hits based on minimum \#repeats (&gt;=3) in human and presence in mouse.
     -   Writes a fasta file for each best hit of clan with all of the  repeats
     -   logs/hmm\_results.json - log before any filtering
 -   parse\_tblout\_iterate.py *\$1: pfam/tblout{og\_hit\_id}.tblout \$2: fasta\_ogs/{og\_id}.fa*
@@ -206,7 +206,7 @@ Similar to *run_pfam_iteration.sh* using scripts *parse_denovo_tblout_iterate.py
 ## Phylogenetic analysis
 
 Finish both Pfam and MEME repeat detection first.
-This snakefile determines the OG ids and OG-hit ids to run pipeline on by glob'ing the */pfam/aligned/{og_id_hit}.linsi.fa* and  */denovo/aligned/{og_id}.linsi.fa* files.
+This snakefile determines the OG ids and OG-hit ids to run pipeline on all files in */pfam/aligned/{og_id_hit}.linsi.fa* and  */denovo/aligned/{og_id}.linsi.fa* 
 
 Hence the *"pfam"* can be replaced by *"denovo"* in the paths outlined below unless otherwise indicated.
 
@@ -270,11 +270,17 @@ Note that Treefix Annotate generates more files in the *pfam/treefix/* directory
 
 **parse_evo_events(.py)**
 
-Parse TreeFix output by removing inconsistent duplications, inferring events and summarizing duplications/losses of repeat tree  reconciled with gene tree. 
-Netto duplications are non-ancestral, taking into account the genetree root instead of vertebrate common ancestor
+Parse TreeFix output by removing inconsistent duplications, inferring events and summarizing duplications/losses of repeat trees  reconciled with gene trees. 
+A protein repeat duplication (PRD) score is calculated for each OG as relative measure of repeat evolution. 
+This PRD score can be used to rank protein families, compare them based on repeat evolution and find OGs with rapidly-evolving repeats. 
+ 
+<p align="center"> 
+<b>PRD score = (x - u) / n;</b><br />
+ with x = netto duplications since most recent common ancestor (gene tree root); u = mean duplications in the full dataset, n = number of proteins in the OG.</p>
 
-Count duplications/losses using tree reconciliation of repeat tree with gene tree
-For the gene duplications, count dup/loss in gene tree compared to species tree
+Count duplications/losses using tree reconciliation of repeat trees with gene trees. Note: the netto duplications are non-ancestral duplications, taking into account the genetree root instead of vertebrate common ancestor
+
+ For the gene duplications, count duplications/losses  in the gene tree compared to species tree
  
 - Input (glob):
     -  pfam/treefix/{og\_id\_hit}.treefix.nhx.tree
@@ -326,7 +332,7 @@ Output optional (not by default): report OGs that have repeats in less than 4 pr
 **generate_human_og_mapping.py**
 
 Generate OG to human gene mapping
-for Schaper comparison and human-lineage overview 
+for the human-lineage overview and comparison to external datasets.
 
 - Input:
   - pfam/meme_repeat_stats.json
@@ -335,7 +341,8 @@ for Schaper comparison and human-lineage overview
 
 **generate_phyrepid_results(.py)**
 
- Makes table with all columns: ExAC, Selectome, Schaper, gene tree annotation.
+Generates PRD score ranking and annotate with comparisons to external datasets if available [(documentation)](docs/analysis_documentation.md).
+Makes a table with all columns: ExAC, Selectome, Schaper, gene tree annotation.
 
 - Input
   - pfam/meme_evo_events.json
