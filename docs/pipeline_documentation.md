@@ -341,7 +341,7 @@ for the human-lineage overview and comparison to external datasets.
 
 **generate_phyrepid_results(.py)**
 
-Generates PRD score ranking and annotate with comparisons to external datasets if available [(documentation)](docs/analysis_documentation.md).
+Generates PRD score ranking and annotate with comparisons to external datasets if available [(documentation)](analysis_documentation.md).
 Makes a table with all columns: ExAC, Selectome, Schaper, gene tree annotation.
 
 - Input
