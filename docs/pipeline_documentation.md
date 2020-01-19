@@ -1,6 +1,6 @@
 ﻿# PhyRepID pipeline documentation
 
-![PhyRepID pipeline overview](../PhyRepID_overview.png =600x)
+<p align="center"><img src="../PhyRepID_overview.png" width="675" /></p>
 
  
 ## Overview of the workflow
