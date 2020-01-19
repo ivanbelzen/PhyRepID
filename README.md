@@ -64,7 +64,7 @@ CC0 licensed. (Finn, R.D. et al., 2015)
 
 ### Input data:  
 
-- Orthologous proteins were acquired from ENSEMBL Compara v91 (Zerbino et al. 2018) using a SPARQL query on the EBI endpoint (https://www.ebi.ac.uk/rdf/services/sparql) on 12-04-2018. Protein-coding genes homologous in *Homo sapiens* (http://identifiers.org/taxonomy/9606) and 13 [vertebrate species (settings)] (pipeline/ensembl_stable_id_species.json) 
+- Orthologous proteins were acquired from ENSEMBL Compara v91 (Zerbino et al. 2018) using a SPARQL query on the EBI endpoint (https://www.ebi.ac.uk/rdf/services/sparql) on 12-04-2018. Protein-coding genes homologous in *Homo sapiens* (http://identifiers.org/taxonomy/9606) and 13 [vertebrate species (settings)](pipeline/ensembl_stable_id_species.json) 
 *Mus musculus* (mouse), *Monodelphis domestica* (opossum), *Sarcophilus harrisii* (tasmanian devil), *Ornithorhynchus anatinus* (platypus), *Anas platyrhynchos* (duck), *Gallus gallus* (chicken), *Gasterosteus aculeatus* (stickleback), *Takifugu rubripes* (takifugu), *Pelodiscus sinensis* (turtle), *Anolis carolinensis* (anole lizard), *Xenopus tropicalis* (frog), *Danio rerio* (zebrafish), *Lepisosteus oculatus* (spotted gar).
    
 - The gene trees and protein sequences were retrieved via the ENSEMBL API ([http://rest.ensembl.org](http://rest.ensembl.org))
