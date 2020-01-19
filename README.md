@@ -1,4 +1,5 @@
 ﻿# PhyRepID pipeline
+![PhyRepID pipeline overview](PhyRepID_overview.png =600x)
 
 ## Overview
 
@@ -23,8 +24,6 @@ Detailed documentation can be found in the docs
  - [Additional analysis scripts documentation](docs/analysis_documentation.md)
  - [Supplementary table annotation](docs/supplement_documentation.md)
 
-
-![PhyRepID pipeline overview](PhyRepID_overview.png)
 
 ## Dependencies
 

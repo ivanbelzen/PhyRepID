@@ -1,5 +1,7 @@
 ﻿# PhyRepID pipeline documentation
 
+![PhyRepID pipeline overview](../PhyRepID_overview.png =600x)
+
  
 ## Overview of the workflow
 
