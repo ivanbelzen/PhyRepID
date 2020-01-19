@@ -17,7 +17,14 @@ The pipeline consists of four components:
  with x = duplications since most recent common ancestor; u = mean duplications in the full dataset, n = number of proteins in the OG.
 
 The workflow is defined in Snakemake.
-[Detailed documentation can be found in the docs](docs/pipeline_documentation.md)
+Detailed documentation can be found in the docs
+
+ - [Pipeline documentation](docs/pipeline_documentation.md)
+ - [Additional analysis scripts documentation](docs/analysis_documentation.md)
+ - [Supplementary table annotation](docs/supplement_documentation.md)
+
+
+![PhyRepID pipeline overview](PhyRepID_overview.png)
 
 ## Dependencies
 
