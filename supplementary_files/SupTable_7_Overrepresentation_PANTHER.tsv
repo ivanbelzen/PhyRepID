@@ -1,0 +1,144 @@
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_motif.lst (Homo sapiens)
+Reference List:	Homo sapiens (all genes in database)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	1455
+PANTHER GO-Slim Biological Process	Homo sapiens - REFLIST (20996)	S1_motif.lst (2652)	S1_motif.lst (expected)	S1_motif.lst (over/under)	S1_motif.lst (fold Enrichment)	S1_motif.lst (P-value)
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_motif.lst (Homo sapiens)
+Reference List:	Homo sapiens (all genes in database)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	1455
+PANTHER GO-Slim Biological Process	Homo sapiens - REFLIST (20996)	S1_motif.lst (2652)	S1_motif.lst (expected)	S1_motif.lst (over/under)	S1_motif.lst (fold Enrichment)	S1_motif.lst (P-value)
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_prd.lst (Homo sapiens)
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	891
+PANTHER GO-Slim Biological Process	S1_all.lst - REFLIST (4885)	S1_prd.lst (1024)	S1_prd.lst (expected)	S1_prd.lst (over/under)	S1_prd.lst (fold Enrichment)	S1_prd.lst (P-value)
+regulation of metabolic process (GO:0019222)	442	138	92.65	+	1.49	2.68E-02
+gene expression (GO:0010467)	617	186	129.34	+	1.44	5.31E-03
+macromolecule metabolic process (GO:0043170)	786	232	164.76	+	1.41	7.50E-04
+organic substance metabolic process (GO:0071704)	962	274	201.66	+	1.36	7.99E-04
+metabolic process (GO:0008152)	1123	303	235.40	+	1.29	1.03E-02
+Unclassified (UNCLASSIFIED)	2124	423	445.24	-	.95	0.00E00
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_prd.lst (Homo sapiens)
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	163
+PANTHER Protein Class	S1_all.lst - REFLIST (4885)	S1_prd.lst (1024)	S1_prd.lst (expected)	S1_prd.lst (over/under)	S1_prd.lst (fold Enrichment)	S1_prd.lst (P-value)
+zinc finger transcription factor (PC00244)	153	57	32.07	+	1.78	4.46E-02
+transcription factor (PC00218)	353	113	74.00	+	1.53	1.20E-02
+Unclassified (UNCLASSIFIED)	2690	540	563.88	-	.96	0.00E00
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S2_humlin.lst (Homo sapiens)	There are duplicate IDs in the file. The unique set of IDs will be used.
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	891
+PANTHER GO-Slim Biological Process	S1_all.lst - REFLIST (4885)	S2_humlin.lst (1665)	S2_humlin.lst (expected)	S2_humlin.lst (over/under)	S2_humlin.lst (fold Enrichment)	S2_humlin.lst (P-value)
+gene expression (GO:0010467)	617	278	210.30	+	1.32	3.76E-02
+macromolecule metabolic process (GO:0043170)	786	351	267.90	+	1.31	4.25E-03
+organic substance metabolic process (GO:0071704)	962	409	327.89	+	1.25	2.91E-02
+Unclassified (UNCLASSIFIED)	2124	721	723.94	-	1.00	0.00E00
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_motif.lst (Homo sapiens)
+Reference List:	Homo sapiens (all genes in database)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	1455
+PANTHER GO-Slim Biological Process	Homo sapiens - REFLIST (20996)	S1_motif.lst (2652)	S1_motif.lst (expected)	S1_motif.lst (over/under)	S1_motif.lst (fold Enrichment)	S1_motif.lst (P-value)
+snRNA processing (GO:0016180)	25	17	3.16	+	5.38	1.56E-03
+snRNA 3'-end processing (GO:0034472)	25	17	3.16	+	5.38	1.56E-03
+snRNA metabolic process (GO:0016073)	29	18	3.66	+	4.91	1.98E-03
+glutamate receptor signaling pathway (GO:0007215)	39	20	4.93	+	4.06	4.87E-03
+nuclear-transcribed mRNA catabolic process (GO:0000956)	43	21	5.43	+	3.87	5.06E-03
+synaptic transmission, glutamatergic (GO:0035249)	44	20	5.56	+	3.60	1.97E-02
+mRNA catabolic process (GO:0006402)	65	24	8.21	+	2.92	4.56E-02
+RNA catabolic process (GO:0006401)	87	30	10.99	+	2.73	1.61E-02
+negative regulation of response to stimulus (GO:0048585)	114	36	14.40	+	2.50	1.54E-02
+negative regulation of signal transduction (GO:0009968)	106	33	13.39	+	2.46	4.73E-02
+regulation of membrane potential (GO:0042391)	139	40	17.56	+	2.28	3.11E-02
+RNA metabolic process (GO:0016070)	275	78	34.74	+	2.25	5.69E-06
+ncRNA metabolic process (GO:0034660)	145	41	18.31	+	2.24	2.85E-02
+positive regulation of transcription by RNA polymerase II (GO:0045944)	260	70	32.84	+	2.13	2.03E-04
+RNA processing (GO:0006396)	233	60	29.43	+	2.04	5.40E-03
+regulation of response to stimulus (GO:0048583)	206	52	26.02	+	2.00	3.64E-02
+regulation of transcription by RNA polymerase II (GO:0006357)	651	160	82.23	+	1.95	8.17E-10
+nucleic acid metabolic process (GO:0090304)	386	94	48.76	+	1.93	9.93E-05
+regulation of transcription, DNA-templated (GO:0006355)	687	166	86.77	+	1.91	1.24E-09
+regulation of nucleic acid-templated transcription (GO:1903506)	687	166	86.77	+	1.91	1.24E-09
+regulation of RNA biosynthetic process (GO:2001141)	740	172	93.47	+	1.84	6.82E-09
+regulation of biosynthetic process (GO:0009889)	753	175	95.11	+	1.84	4.75E-09
+regulation of cellular biosynthetic process (GO:0031326)	752	174	94.98	+	1.83	6.77E-09
+transcription by RNA polymerase II (GO:0006366)	1011	215	127.70	+	1.68	2.33E-08
+gene expression (GO:0010467)	1842	383	232.66	+	1.65	9.61E-16
+regulation of metabolic process (GO:0019222)	1347	278	170.14	+	1.63	3.21E-10
+macromolecule metabolic process (GO:0043170)	2419	492	305.54	+	1.61	1.04E-19
+cell cycle (GO:0007049)	605	121	76.42	+	1.58	1.29E-02
+transcription, DNA-templated (GO:0006351)	1251	246	158.01	+	1.56	5.95E-07
+organic substance metabolic process (GO:0071704)	3338	642	421.62	+	1.52	7.96E-22
+metabolic process (GO:0008152)	4072	760	514.33	+	1.48	1.04E-23
+regulation of biological process (GO:0050789)	2673	477	337.63	+	1.41	6.68E-10
+biological regulation (GO:0065007)	3089	544	390.17	+	1.39	7.01E-11
+cellular response to stimulus (GO:0051716)	1977	321	249.71	+	1.29	2.66E-02
+cellular process (GO:0009987)	6070	930	766.70	+	1.21	1.72E-07
+Unclassified (UNCLASSIFIED)	10588	1049	1337.37	-	.78	0.00E00
+immune system process (GO:0002376)	620	35	78.31	-	.45	3.08E-04
+cell adhesion (GO:0007155)	373	16	47.11	-	.34	1.27E-03
+biological adhesion (GO:0022610)	373	16	47.11	-	.34	1.27E-03
+sensory perception (GO:0007600)	335	12	42.31	-	.28	2.88E-04
+defense response (GO:0006952)	246	8	31.07	-	.26	7.10E-03
+immune effector process (GO:0002252)	175	4	22.10	-	.18	1.87E-02
+innate immune response (GO:0045087)	173	3	21.85	-	.14	4.52E-03
+immune response (GO:0006955)	350	5	44.21	-	.11	1.43E-09
+detection of chemical stimulus involved in sensory perception (GO:0050907)	184	2	23.24	-	.09	1.87E-04
+sensory perception of chemical stimulus (GO:0007606)	224	2	28.29	-	.07	2.59E-06
+regulation of leukocyte activation (GO:0002694)	116	1	14.65	-	.07	3.50E-02
+regulation of cell activation (GO:0050865)	118	1	14.90	-	.07	3.74E-02
+response to cytokine (GO:0034097)	118	1	14.90	-	.07	3.74E-02
+antigen receptor-mediated signaling pathway (GO:0050851)	125	1	15.79	-	.06	1.69E-02
+immune response-activating cell surface receptor signaling pathway (GO:0002429)	136	1	17.18	-	.06	3.21E-03
+immune response-regulating cell surface receptor signaling pathway (GO:0002768)	136	1	17.18	-	.06	3.21E-03
+leukocyte activation (GO:0045321)	153	1	19.33	-	.05	6.87E-04
