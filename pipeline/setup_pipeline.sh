@@ -40,3 +40,11 @@ mkdir -p ${root}denovo/treefix/adjusted/images/
 wget ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz 
 mv Pfam-A.hmm.gz ${root}resources/.
 gunzip ${root}resources/Pfam-A.hmm.gz 
+
+## Retrieve data from ExAC and Schaper et al supplementary data 
+# and place in /resources/ to make comparison and annotation possible
+#/resources/fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt
+
+## Schaper et al supplementary data  http://www.atgc-montpellier.fr/TRE
+#resources/eukaryotic_pairwise_repeat_unit_phylogenies_denovo.newick.gz
+#resources/eukaryotic_pairwise_repeat_unit_phylogenies_PFAM.newick.gz
