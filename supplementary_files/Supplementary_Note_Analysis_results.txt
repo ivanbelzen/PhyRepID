@@ -240,25 +240,25 @@ odds ratio
 
 [1] "Schaper comparison enrichment in  human lin #OGs 1588"
      [,1] [,2]
-[1,]   49   45
-[2,]  478 1192
+[1,]   47   45
+[2,]  476 1192
 
 	Fisher's Exact Test for Count Data
 
 data:  fisher.table
-p-value = 4.142e-06
+p-value = 1.072e-05
 alternative hypothesis: true odds ratio is not equal to 1
 95 percent confidence interval:
- 1.747203 4.223028
+ 1.674669 4.084420
 sample estimates:
 odds ratio 
-   2.71364 
+  2.613879 
 
 [1] "Schaper comparison enrichment in human lin #OGs  1588 including unannotated by Schaper as bottom row"
      [,1] [,2]
-[1,]   49   45
-[2,]  478 1192
-[3,] 1067 2114
+[1,]   47   45
+[2,]  476 1192
+[3,] 1065 2114
 [1] "Schaper comparison enrichment False in <0 PRD score"
      [,1] [,2]
 [1,] 1369  299
@@ -315,19 +315,19 @@ odds ratio
 
 [1] "Selectome  comparison enrichment in human lin #OGs 1588"
      [,1] [,2]
-[1,]  268  809
-[2,] 1324 2542
+[1,]  266  809
+[2,] 1322 2542
 
 	Fisher's Exact Test for Count Data
 
 data:  fisher.table
-p-value = 4.246e-09
+p-value = 2.603e-09
 alternative hypothesis: true odds ratio is not equal to 1
 95 percent confidence interval:
- 0.5434580 0.7429331
+ 0.5400053 0.7388100
 sample estimates:
 odds ratio 
- 0.6360814 
+ 0.6322904 
 
 [1] "Comparing PRD score means in Selectome T/F:"
 [1] "Selectome True mean: -0.0277789650333953"
@@ -374,19 +374,19 @@ odds ratio
 
 [1] "SegDup comparison enrichment in human lin #OGs 1588"
      [,1] [,2]
-[1,]  301  536
-[2,] 1291 2815
+[1,]  299  536
+[2,] 1289 2815
 
 	Fisher's Exact Test for Count Data
 
 data:  fisher.table
-p-value = 0.01184
+p-value = 0.01471
 alternative hypothesis: true odds ratio is not equal to 1
 95 percent confidence interval:
- 1.043884 1.434480
+ 1.038294 1.427606
 sample estimates:
 odds ratio 
-  1.224411 
+  1.218165 
 
 [1] "Comparing PRD score means in SegDup T/F:"
 [1] "SegDup True mean: 0.0430799308637126"
@@ -492,19 +492,19 @@ odds ratio
 
 [1] "Gene duplication T/F enrichment in human lin #OGs 1588"
      [,1] [,2]
-[1,] 1161 2356
-[2,]  431  995
+[1,] 1159 2356
+[2,]  429  995
 
 	Fisher's Exact Test for Count Data
 
 data:  fisher.table
-p-value = 0.05994
+p-value = 0.05524
 alternative hypothesis: true odds ratio is not equal to 1
 95 percent confidence interval:
- 0.9939892 1.3030607
+ 0.9967048 1.3071266
 sample estimates:
 odds ratio 
-  1.137592 
+  1.140928 
 
 pdf 
   2 
@@ -539,3 +539,28 @@ data:  prd_score by gt_bool
 W = 3164424, p-value < 2.2e-16
 alternative hypothesis: true location shift is not equal to 0
 
+
+	Wilcoxon rank sum test with continuity correction
+
+data:  prd_score by segdup
+W = 1869106, p-value = 1.616e-05
+alternative hypothesis: true location shift is greater than 0
+
+
+	Wilcoxon rank sum test with continuity correction
+
+data:  prd_score by segdup
+W = 2983.5, p-value = 0.8332
+alternative hypothesis: true location shift is greater than 0
+
+
+	Wilcoxon rank sum test with continuity correction
+
+data:  prd_score by segdup
+W = 543542, p-value = 0.004448
+alternative hypothesis: true location shift is greater than 0
+
+null device 
+          1 
+[1] 486
+[1] 4939

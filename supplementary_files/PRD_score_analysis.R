@@ -57,7 +57,7 @@ gene_symbol_list = c("AHNAK","CDC20","VCAM1", "KNL1", "PRDM9", "SPATA31A3", "PRX
 top_clans_cnt=10 #Number of clans include in the top X most frequent list
 
 # Output files
-sink(paste0(path,"PhyRepID_Routput.txt"))
+sink(paste0(path,"Supplementary_Note_Analysis_results.txt"))
 pdf(paste0(path,"PhyRepID_plots.pdf"),paper="a4r")
 clan_summary_file=paste0(path,"SupTable_4_Pfam_clan_summary.tsv") #dataframe with clan statistics
 SupFig_top_clans_file=paste0(path,"SupFig_top_clans_comparision.pdf")
@@ -113,6 +113,7 @@ top100_mean=mean(top100$prd_score)
 overall_mean = mean(scores$prd_score)
 
 human_lin=scores[scores$human_dup>0,]
+human_lin=human_lin[complete.cases(human_lin$identifier),]
 human100 = head(human_lin[order(-human_lin$human_frac),],n=100)
 scores[,"rank_humlin"]="False"
 scores[scores$identifier %in% human_lin$identifier,"rank_humlin"]="True"
@@ -222,6 +223,8 @@ fisher.table = matrix(c(nrow(scores[scores$schaper_pos=="False" & scores$prd_sco
                         
 ), nrow = 3)
 print(fisher.table)
+
+
 ## Selectome enrichment in top 100
 print("### Selectome")
 print("Selectome enrichment in top 100  PRD score")
@@ -332,11 +335,11 @@ wilcox.test(mis_z ~ rank_humlin, data = scores,alternative="greater")
 wilcox.test(pLI ~ rank_humlin, data = scores,alternative="greater")
 
 
-## Gene duplication and oversplit OGs
+## Gene duplication and truncated OGs
 
-print("## Gene duplication and oversplit OGs")
+print("## Gene duplication and truncated OGs")
 
-print("Oversplit OGs (non-euteleostomi root t117571) comparison enrichment in top 100 ")
+print("Truncated gene trees, truncated OGs (non-euteleostomi root t117571) comparison enrichment in top 100 ")
 fisher.table = matrix(c(nrow(top100[top100$gt_root!="t117571",]),
                         nrow(top100[top100$gt_root=="t117571",]),
                         nrow(scores[scores$gt_root!="t117571" &! scores$identifier %in% top100$identifier,]),  
@@ -344,6 +347,14 @@ fisher.table = matrix(c(nrow(top100[top100$gt_root!="t117571",]),
 ), nrow = 2)
 print(fisher.table)
 fisher.test(fisher.table)
+
+print(paste0("Gene tree truncated:",length(unique(scores[scores$gt_root!="t117571",c("genetree_id")]))))
+print(paste0("Gene tree total:",length(unique(scores[,c("genetree_id")]))))
+print(paste0("GT truncated fraction:",length(unique(scores[scores$gt_root!="t117571",c("genetree_id")]))/length(unique(scores[,c("genetree_id")]))))
+
+print(paste0("OG truncated:",nrow(scores[scores$gt_root!="t117571",])))
+print(paste0("OG truncated fraction:",nrow(scores[scores$gt_root!="t117571",])/nrow(scores)))
+
 
 print("Mean gene duplication:")
 print(paste0("dataset: ", mean(scores$gt_dup,na.rm=T)))
