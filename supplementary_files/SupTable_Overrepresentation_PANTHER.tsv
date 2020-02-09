@@ -1,4 +1,4 @@
-
+Supplementary Table - PANTHER functional overrepresentation analysis 
 
 
 
@@ -256,6 +256,43 @@ Unclassified (UNCLASSIFIED)	12714	540	620.08	-	.87	0.00E00
 
 Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
 Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_prd_pfam.lst (Homo sapiens)
+Reference List:	Homo sapiens (all genes in database)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	1455
+PANTHER GO-Slim Biological Process	Homo sapiens - REFLIST (20996)	S1_prd_pfam.lst (349)	S1_prd_pfam.lst (expected)	S1_prd_pfam.lst (over/under)	S1_prd_pfam.lst (fold Enrichment)	S1_prd_pfam.lst (P-value)
+extracellular matrix organization (GO:0030198)	69	17	1.15	+	14.82	6.02E-11
+extracellular structure organization (GO:0043062)	72	17	1.20	+	14.20	1.10E-10
+cartilage development (GO:0051216)	26	6	.43	+	13.88	1.69E-02
+transcription, DNA-templated (GO:0006351)	1251	47	20.79	+	2.26	4.84E-04
+regulation of metabolic process (GO:0019222)	1347	45	22.39	+	2.01	2.06E-02
+gene expression (GO:0010467)	1842	59	30.62	+	1.93	2.25E-03
+macromolecule metabolic process (GO:0043170)	2419	71	40.21	+	1.77	4.20E-03
+Unclassified (UNCLASSIFIED)	10588	168	176.00	-	.95	0.00E00
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_prd_pfam.lst (Homo sapiens)
+Reference List:	Homo sapiens (all genes in database)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	203
+PANTHER Protein Class	Homo sapiens - REFLIST (20996)	S1_prd_pfam.lst (349)	S1_prd_pfam.lst (expected)	S1_prd_pfam.lst (over/under)	S1_prd_pfam.lst (fold Enrichment)	S1_prd_pfam.lst (P-value)
+C2H2 zinc finger transcription factor (PC00248)	218	29	3.62	+	8.00	1.99E-14
+KRAB box transcription factor (PC00029)	191	24	3.17	+	7.56	2.94E-11
+zinc finger transcription factor (PC00244)	365	42	6.07	+	6.92	2.62E-19
+transcription factor (PC00218)	1138	46	18.92	+	2.43	9.72E-06
+Unclassified (UNCLASSIFIED)	12714	224	211.33	+	1.06	0.00E00
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
 Analyzed List:	S1_prd_motif.lst (Homo sapiens)
 Reference List:	Homo sapiens (all genes in database)
 Test Type:	FISHER
@@ -346,6 +383,39 @@ zinc finger transcription factor (PC00244)	153	57	32.07	+	1.78	4.46E-02
 transcription factor (PC00218)	353	113	74.00	+	1.53	1.20E-02
 Unclassified (UNCLASSIFIED)	2690	540	563.88	-	.96	0.00E00
 
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_prd_pfam.lst (Homo sapiens)
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	891
+PANTHER GO-Slim Biological Process	S1_all.lst - REFLIST (4885)	S1_prd_pfam.lst (349)	S1_prd_pfam.lst (expected)	S1_prd_pfam.lst (over/under)	S1_prd_pfam.lst (fold Enrichment)	S1_prd_pfam.lst (P-value)
+extracellular matrix organization (GO:0030198)	46	17	3.29	+	5.17	3.68E-04
+extracellular structure organization (GO:0043062)	46	17	3.29	+	5.17	3.68E-04
+Unclassified (UNCLASSIFIED)	2124	168	151.75	+	1.11	0.00E00
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_prd_pfam.lst (Homo sapiens)
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	163
+PANTHER Protein Class	S1_all.lst - REFLIST (4885)	S1_prd_pfam.lst (349)	S1_prd_pfam.lst (expected)	S1_prd_pfam.lst (over/under)	S1_prd_pfam.lst (fold Enrichment)	S1_prd_pfam.lst (P-value)
+KRAB box transcription factor (PC00029)	58	24	4.14	+	5.79	4.11E-08
+C2H2 zinc finger transcription factor (PC00248)	77	29	5.50	+	5.27	3.28E-09
+zinc finger transcription factor (PC00244)	153	42	10.93	+	3.84	5.48E-10
+transcription factor (PC00218)	353	46	25.22	+	1.82	3.56E-02
+Unclassified (UNCLASSIFIED)	2690	224	192.18	+	1.17	0.00E00
 
 
 
