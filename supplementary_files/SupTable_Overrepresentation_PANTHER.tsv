@@ -459,6 +459,32 @@ extracellular matrix protein (PC00102)	98	1	13.54	-	.07	1.08E-02
 
 Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
 Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_100.lst (Homo sapiens)
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	891
+PANTHER GO-Slim Biological Process	S1_all.lst - REFLIST (4885)	S1_100.lst (98)	S1_100.lst (expected)	S1_100.lst (over/under)	S1_100.lst (fold Enrichment)	S1_100.lst (P-value)
+Unclassified (UNCLASSIFIED)	2124	61	42.61	+	1.43	0.00E00
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
+Analyzed List:	S1_100.lst (Homo sapiens)
+Reference List:	S1_all.lst (Homo sapiens)
+Test Type:	FISHER
+Correction:	BONFERRONI
+Bonferroni count:	163
+PANTHER Protein Class	S1_all.lst - REFLIST (4885)	S1_100.lst (98)	S1_100.lst (expected)	S1_100.lst (over/under)	S1_100.lst (fold Enrichment)	S1_100.lst (P-value)
+Unclassified (UNCLASSIFIED)	2690	73	53.97	+	1.35	0.00E00
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (Released 20190711)
+Annotation Version and Release Date:	PANTHER version 14.1 Released 2019-03-12
 Analyzed List:	S2_humlin.lst (Homo sapiens)	There are duplicate IDs in the file. The unique set of IDs will be used.
 Reference List:	Homo sapiens (all genes in database)
 Test Type:	FISHER
