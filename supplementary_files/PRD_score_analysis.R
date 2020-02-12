@@ -57,9 +57,9 @@ gene_symbol_list = c("AHNAK","CDC20","VCAM1", "KNL1", "PRDM9", "SPATA31A3", "PRX
 top_clans_cnt=10 #Number of clans include in the top X most frequent list
 
 # Output files
-sink(paste0(path,"Supplementary_Note_Analysis_results.txt"))
+sink(paste0(path,"Supplementary_Note_2_Analysis_results.txt"))
 pdf(paste0(path,"PhyRepID_plots.pdf"),paper="a4r")
-clan_summary_file=paste0(path,"SupTable_4_Pfam_clan_summary.tsv") #dataframe with clan statistics
+clan_summary_file=paste0(path,"Extended_data_Pfam_clan_summary.tsv") #dataframe with clan statistics
 SupFig_top_clans_file=paste0(path,"SupFig_top_clans_comparision.pdf")
 SupFig_file=paste0(path,"Supplementary_figures.pdf")
 Fig1_prd_score_file=paste0(path,"Fig1_prd_score_landscape.svg")
@@ -67,8 +67,8 @@ Fig2_topclan_file = paste0(path,"Fig2_top5_clans_prdscore_all_zoom.svg")
   
 # Input files
 
-scores=read.table(paste0(path,"SupTable_1_PRD_score_ranking.tsv"),sep="\t",na.strings = NULL,header=T)
-human_anno=read.table(paste0(path,"SupTable_2_Human_lineage_full.tsv"),sep="\t",na.strings = NULL,header=T)
+scores=read.table(paste0(path,"Supplementary_Table_1_PRD_score_ranking.tsv"),sep="\t",na.strings = NULL,header=T)
+human_anno=read.table(paste0(path,"Supplementary_Table_5_PRD_score_ranking_Human_lineage_full.tsv"),sep="\t",na.strings = NULL,header=T)
 mscores = merge(x=scores, y=human_anno[,c("identifier","human_dup","human_frac","human_protein_cnt")], by="identifier",all=T)
 scores=mscores
 
