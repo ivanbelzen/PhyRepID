@@ -6,6 +6,8 @@
 The Phylogenomics Repeat Identification 
 (PhyRepID) pipeline quantifies repeat evolution using comparative (phylo)genomics of orthologous groups (OGs). 
 
+Preprint on bioRxiv: [doi.org/10.1101/2020.02.14.947036](https://doi.org/10.1101/2020.02.14.947036)
+
 The pipeline consists of four components: 
 
  1. **Data collection:** Retrieval of protein sequences and gene trees from ENSEMBL from orthologous groups based  on a human protein-coding gene and its relation to 13 other selected representative vertebrate species.
@@ -23,6 +25,7 @@ Detailed documentation can be found in the docs
  - [Pipeline documentation](docs/pipeline_documentation.md)
  - [Additional analysis scripts documentation](docs/analysis_documentation.md)
  - [Supplementary table annotation](docs/supplement_documentation.md)
+
 
 
 ## Dependencies
